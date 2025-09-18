@@ -9,8 +9,22 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "TeamUp! - Organisez vos événements sportifs",
+  description:
+    "La plateforme mobile qui connecte les passionnés de sport pour organiser, participer et exceller ensemble dans leurs activités sportives locales.",
+  openGraph: {
+    title: "TeamUp! - Organisez vos événements sportifs",
+    description:
+      "La plateforme mobile qui connecte les passionnés de sport pour organiser, participer et exceller ensemble dans leurs activités sportives locales.",
+    type: "website",
+    images: ["https://lovable.dev/opengraph-image-p98pqg.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@lovable_dev",
+    images: ["https://lovable.dev/opengraph-image-p98pqg.png"],
+  },
+  authors: [{ name: "TeamUp!" }],
 };
 
 const geistSans = Geist({
