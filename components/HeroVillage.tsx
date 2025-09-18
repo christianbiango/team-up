@@ -27,7 +27,7 @@ const HeroVillage = () => {
           <div className="flex items-center gap-4">
             <div className="relative">
               <Image
-                src="/teamup-logo.png"
+                src="/assets/teamup-logo.png"
                 alt="TeamUp!"
                 width={56}
                 height={56}
