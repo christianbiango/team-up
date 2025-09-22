@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -55,7 +54,6 @@ interface Event {
 }
 
 const Dashboard = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,8 +74,6 @@ const Dashboard = () => {
         router.push("/auth");
         return;
       }
-
-      setCurrentUser(user);
 
       // Fetch user profile
       const { data: profileData, error: profileError } = await supabase
