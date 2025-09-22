@@ -12,19 +12,6 @@ export const metadata: Metadata = {
   title: "TeamUp! - Organisez vos événements sportifs",
   description:
     "La plateforme mobile qui connecte les passionnés de sport pour organiser, participer et exceller ensemble dans leurs activités sportives locales.",
-  openGraph: {
-    title: "TeamUp! - Organisez vos événements sportifs",
-    description:
-      "La plateforme mobile qui connecte les passionnés de sport pour organiser, participer et exceller ensemble dans leurs activités sportives locales.",
-    type: "website",
-    images: ["https://lovable.dev/opengraph-image-p98pqg.png"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@lovable_dev",
-    images: ["https://lovable.dev/opengraph-image-p98pqg.png"],
-  },
-  authors: [{ name: "TeamUp!" }],
 };
 
 const geistSans = Geist({
@@ -39,7 +26,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <link
+          rel="icon"
+          type="image/png"
+          href="/favicon-96x96.png"
+          sizes="96x96"
+        />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <meta name="apple-mobile-web-app-title" content="TeamUp!" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="author" content="TeamUp!" />
+        <meta
+          property="og:title"
+          content="TeamUp! - Organisez vos événements sportifs"
+        />
+        <meta
+          property="og:description"
+          content="La plateforme mobile qui connecte les passionnés de sport pour organiser, participer et exceller ensemble dans leurs activités sportives locales."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/screenshots/desktop.png" />
+      </head>
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
