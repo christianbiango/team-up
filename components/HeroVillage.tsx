@@ -1,5 +1,5 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Users,
@@ -12,6 +12,9 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
+import teamupLogo from "@/public/assets/teamup-logo.png";
+import Image from "next/image";
+import Footer from "./Footer";
 
 const HeroVillage = () => {
   return (
@@ -26,13 +29,7 @@ const HeroVillage = () => {
         <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-3xl p-4 shadow-soft">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <Image
-                src="/assets/teamup-logo.png"
-                alt="TeamUp!"
-                width={56}
-                height={56}
-                className="h-14 w-auto"
-              />
+              <Image src={teamupLogo} alt="TeamUp!" className="h-14 w-auto" />
               <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-sunshine-yellow animate-pulse" />
             </div>
             <div>
@@ -42,7 +39,12 @@ const HeroVillage = () => {
               </p>
             </div>
           </div>
-          <Button variant="village-outline" size="sm" className="gap-2">
+          <Button
+            variant="village-outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => (window.location.href = "/auth")}
+          >
             <Heart className="h-4 w-4" />
             Rejoignez-nous
           </Button>
@@ -80,17 +82,19 @@ const HeroVillage = () => {
               variant="village"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
+              onClick={() => (window.location.href = "/create-event")}
             >
               <Heart className="h-6 w-6" />
-              Découvrir la magie
+              Créer un événement
             </Button>
             <Button
               variant="village-soft"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
+              onClick={() => (window.location.href = "/events")}
             >
               <Users className="h-6 w-6" />
-              Rejoindre la famille
+              Découvrir les événements
             </Button>
           </div>
         </div>
@@ -177,12 +181,15 @@ const HeroVillage = () => {
               variant="outline"
               size="lg"
               className="bg-white text-earth-brown hover:bg-cream-warm border-white text-xl px-12 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+              onClick={() => (window.location.href = "/auth")}
             >
               🚀 C&apos;est parti !
             </Button>
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
