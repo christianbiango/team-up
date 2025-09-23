@@ -1,24 +1,24 @@
 "use client";
-import { useState, useEffect } from "react";
-import { User } from "@supabase/supabase-js";
+import SimpleNavbar from "@/components/navigation/SimpleNavbar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 import {
-  ArrowLeft,
+  Calendar,
   Edit,
+  Mail,
   MapPin,
   Phone,
-  Mail,
-  Calendar,
-  Trophy,
   Star,
+  Trophy,
   User as UserIcon,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface Profile {
   id: string;
@@ -140,179 +140,173 @@ const Profile = () => {
     );
   }
 
+  const editAction = (
+    <Button
+      variant="village"
+      onClick={() => router.push("/profile/edit")}
+      className="gap-2"
+    >
+      <Edit className="h-4 w-4" />
+      <span className="hidden sm:inline">Modifier le profil</span>
+    </Button>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
-      <div className="container mx-auto max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="village-outline"
-            onClick={() => router.push("/dashboard")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Retour au tableau de bord
-          </Button>
-          <Button
-            variant="village"
-            onClick={() => router.push("/profile/edit")}
-            className="gap-2 mr-4"
-          >
-            <Edit className="h-4 w-4" />
-            Modifier le profil
-          </Button>
-          <Button
-            variant="village-outline"
-            onClick={() => router.push("/stats")}
-            className="gap-2"
-          >
-            <Trophy className="h-4 w-4" />
-            Mes statistiques
-          </Button>
-        </div>
+    <>
+      <SimpleNavbar
+        title="Mon Profil"
+        subtitle="Gérez vos informations personnelles"
+        backTo="/dashboard"
+        backLabel="Tableau de bord"
+        actions={[editAction]}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Profil principal */}
+            <Card className="md:col-span-1 bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+              <CardContent className="p-8 text-center">
+                <Avatar className="w-32 h-32 mx-auto mb-6">
+                  <AvatarImage
+                    src={profile.avatar_url || ""}
+                    alt={profile.full_name}
+                  />
+                  <AvatarFallback className="text-2xl bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white">
+                    {getInitials(profile.full_name)}
+                  </AvatarFallback>
+                </Avatar>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profil principal */}
-          <Card className="md:col-span-1 bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-            <CardContent className="p-8 text-center">
-              <Avatar className="w-32 h-32 mx-auto mb-6">
-                <AvatarImage
-                  src={profile.avatar_url || ""}
-                  alt={profile.full_name}
-                />
-                <AvatarFallback className="text-2xl bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white">
-                  {getInitials(profile.full_name)}
-                </AvatarFallback>
-              </Avatar>
-
-              <h1 className="text-3xl font-bold text-earth-brown mb-2">
-                {profile.full_name}
-              </h1>
-              <p className="text-lg text-earth-brown/70 mb-4">
-                @{profile.username}
-              </p>
-
-              {profile.bio && (
-                <p className="text-earth-brown/80 leading-relaxed mb-6">
-                  {profile.bio}
+                <h1 className="text-3xl font-bold text-earth-brown mb-2">
+                  {profile.full_name}
+                </h1>
+                <p className="text-lg text-earth-brown/70 mb-4">
+                  @{profile.username}
                 </p>
-              )}
 
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Star className="h-5 w-5 text-sunshine-yellow" />
-                <span className="text-earth-brown font-medium capitalize">
-                  Niveau{" "}
-                  {
-                    SKILL_LEVELS[
-                      profile.skill_level as keyof typeof SKILL_LEVELS
-                    ]
-                  }
-                </span>
-              </div>
+                {profile.bio && (
+                  <p className="text-earth-brown/80 leading-relaxed mb-6">
+                    {profile.bio}
+                  </p>
+                )}
 
-              <div className="text-sm text-earth-brown/60">
-                Membre depuis{" "}
-                {new Date(profile.created_at).toLocaleDateString("fr-FR", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Informations détaillées */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Contact */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-coral-warm" />
-                  Informations de contact
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-earth-brown/50" />
-                  <span className="text-earth-brown">{user?.email}</span>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Star className="h-5 w-5 text-sunshine-yellow" />
+                  <span className="text-earth-brown font-medium capitalize">
+                    Niveau{" "}
+                    {
+                      SKILL_LEVELS[
+                        profile.skill_level as keyof typeof SKILL_LEVELS
+                      ]
+                    }
+                  </span>
                 </div>
 
-                {profile.phone && (
+                <div className="text-sm text-earth-brown/60">
+                  Membre depuis{" "}
+                  {new Date(profile.created_at).toLocaleDateString("fr-FR", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Informations détaillées */}
+            <div className="md:col-span-2 space-y-6">
+              {/* Contact */}
+              <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-coral-warm" />
+                    Informations de contact
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 text-earth-brown/50" />
-                    <span className="text-earth-brown">{profile.phone}</span>
+                    <Mail className="h-4 w-4 text-earth-brown/50" />
+                    <span className="text-earth-brown">{user?.email}</span>
                   </div>
-                )}
 
-                {profile.location && (
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-4 w-4 text-earth-brown/50" />
-                    <span className="text-earth-brown">{profile.location}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  {profile.phone && (
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-4 w-4 text-earth-brown/50" />
+                      <span className="text-earth-brown">{profile.phone}</span>
+                    </div>
+                  )}
 
-            {/* Sports préférés */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-coral-warm" />
-                  Sports préférés
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {profile.favorite_sports.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {profile.favorite_sports.map((sport) => (
-                      <Badge
-                        key={sport}
-                        variant="secondary"
-                        className="bg-coral-warm/10 text-coral-warm font-medium px-3 py-1"
-                      >
-                        {sport}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-earth-brown/60 italic">
-                    Aucun sport préféré renseigné
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+                  {profile.location && (
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-4 w-4 text-earth-brown/50" />
+                      <span className="text-earth-brown">
+                        {profile.location}
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-            {/* Disponibilités */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-coral-warm" />
-                  Disponibilités
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {profile.availability_days.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {profile.availability_days.map((day) => (
-                      <Badge
-                        key={day}
-                        variant="outline"
-                        className="border-meadow-green text-meadow-green font-medium px-3 py-1"
-                      >
-                        {DAYS_FR[day as keyof typeof DAYS_FR] || day}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-earth-brown/60 italic">
-                    Disponibilités non renseignées
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+              {/* Sports préférés */}
+              <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-coral-warm" />
+                    Sports préférés
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {profile.favorite_sports.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {profile.favorite_sports.map((sport) => (
+                        <Badge
+                          key={sport}
+                          variant="secondary"
+                          className="bg-coral-warm/10 text-coral-warm font-medium px-3 py-1"
+                        >
+                          {sport}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-earth-brown/60 italic">
+                      Aucun sport préféré renseigné
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Disponibilités */}
+              <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-coral-warm" />
+                    Disponibilités
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {profile.availability_days.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {profile.availability_days.map((day) => (
+                        <Badge
+                          key={day}
+                          variant="outline"
+                          className="border-meadow-green text-meadow-green font-medium px-3 py-1"
+                        >
+                          {DAYS_FR[day as keyof typeof DAYS_FR] || day}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-earth-brown/60 italic">
+                      Disponibilités non renseignées
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

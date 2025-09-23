@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import teamupLogo from "@/public/assets/teamup-logo.png";
 import Link from "next/link";
 import Image from "next/image";
+import InstallButton from "./InstallButton";
 
 const Footer = () => {
   return (
@@ -25,11 +26,12 @@ const Footer = () => {
               participer et exceller ensemble dans leurs activités sportives
               locales.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col items-start sm:flex-row gap-4">
               <Button variant="village" size="sm" className="gap-2">
                 <Heart className="h-4 w-4" />
                 Rejoignez-nous
               </Button>
+              <InstallButton />
             </div>
           </div>
 
@@ -48,12 +50,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/events"
                   className="text-earth-brown/70 hover:text-coral-warm transition-colors"
                 >
                   Événements
-                </a>
+                </Link>
               </li>
               <li>
                 <a

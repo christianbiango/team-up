@@ -2,19 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Users,
-  MapPin,
   Calendar,
-  MessageCircle,
-  Trophy,
-  Shield,
   Heart,
+  MapPin,
+  MessageCircle,
+  Shield,
   Sparkles,
   Sun,
+  Trophy,
+  Users,
 } from "lucide-react";
-import teamupLogo from "@/public/assets/teamup-logo.png";
-import Image from "next/image";
-import Footer from "./Footer";
+import HomeNavbar from "./navigation/HomeNavbar";
 
 const HeroVillage = () => {
   return (
@@ -25,31 +23,7 @@ const HeroVillage = () => {
       <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-gradient-to-br from-coral-warm to-terracotta rounded-full opacity-25"></div>
 
       {/* Header organique */}
-      <header className="container mx-auto px-4 py-6 relative z-10">
-        <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-3xl p-4 shadow-soft">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Image src={teamupLogo} alt="TeamUp!" className="h-14 w-auto" />
-              <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-sunshine-yellow animate-pulse" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-earth-brown">TeamUp!</h1>
-              <p className="text-xs text-earth-brown/70 font-medium">
-                Sport & Convivialité
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="village-outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => (window.location.href = "/auth")}
-          >
-            <Heart className="h-4 w-4" />
-            Rejoignez-nous
-          </Button>
-        </div>
-      </header>
+      <HomeNavbar />
 
       {/* Hero Section organique */}
       <section className="container mx-auto px-4 py-12 text-center relative z-10">
@@ -188,8 +162,6 @@ const HeroVillage = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };

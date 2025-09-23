@@ -1,28 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  DollarSign,
-  Trophy,
-  Share2,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  Edit,
+  MapPin,
+  Share2,
+  Trash2,
+  Trophy,
+  Users,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 // import { useOfflineEvents } from "@/hooks/useOfflineEvents";
 import GoogleMap from "@/components/GoogleMap";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
+import { toast } from "sonner";
+import SimpleNavbar from "./navigation/SimpleNavbar";
 
 interface Event {
   id: string;
@@ -234,38 +234,38 @@ const EventDetail = ({ id }: EventDetailProps) => {
     );
   }
 
+  const headerActions = [];
+
+  if (canEdit) {
+    headerActions.push(
+      <Button key="edit" variant="outline" size="sm" className="gap-2">
+        <Edit className="h-4 w-4" />
+        <span className="hidden sm:inline">Modifier</span>
+      </Button>
+    );
+    headerActions.push(
+      <Button key="delete" variant="outline" size="sm">
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    );
+  }
+
+  headerActions.push(
+    <Button key="share" variant="outline" size="sm" className="gap-2">
+      <Share2 className="h-4 w-4" />
+      <span className="hidden sm:inline">Partager</span>
+    </Button>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20">
+      <SimpleNavbar
+        title={event?.title || "Événement"}
+        backTo="/events"
+        backLabel="Événements"
+        actions={headerActions}
+      />
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/events")}
-            className="text-earth-brown hover:bg-sage-light/50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-          <div className="flex-1" />
-          {canEdit && (
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Modifier
-              </Button>
-              <Button variant="outline" size="sm">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-          <Button variant="outline" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Partager
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">

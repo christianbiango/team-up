@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import GoogleMap from "@/components/GoogleMap";
+import LocationSearch from "@/components/LocationSearch";
+import SimpleNavbar from "@/components/navigation/SimpleNavbar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,28 +13,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { calculateDistance, useGeolocation } from "@/hooks/useGeolocation";
+import { createClient } from "@/lib/supabase/client";
+import { geocodeEvent } from "@/utils/geocoding";
 import {
   Calendar,
+  Clock,
+  Filter,
+  Map,
   MapPin,
-  Users,
+  Navigation,
   Plus,
   Search,
-  Filter,
-  Clock,
-  ArrowLeft,
   Trophy,
-  Navigation,
-  Map,
+  Users,
 } from "lucide-react";
-import { toast } from "sonner";
-import teamupLogo from "@/public/assets/teamup-logo.png";
-import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
-import GoogleMap from "@/components/GoogleMap";
-import LocationSearch from "@/components/LocationSearch";
-import { geocodeEvent } from "@/utils/geocoding";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface Event {
   id: string;
@@ -311,39 +309,11 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-warm border-b border-coral-warm/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/dashboard")}
-                className="text-earth-brown"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour
-              </Button>
-              <Image src={teamupLogo} alt="TeamUp!" className="h-8 w-auto" />
-              <div>
-                <h1 className="text-xl font-bold text-earth-brown">
-                  Événements sportifs
-                </h1>
-                <p className="text-sm text-earth-brown/70">
-                  Découvrez et rejoignez les activités près de chez vous
-                </p>
-              </div>
-            </div>
-            <Button
-              variant="village"
-              onClick={() => router.push("/create-event")}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Créer un événement
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SimpleNavbar
+        title="Événements sportifs"
+        subtitle="Découvrez et rejoignez les activités près de chez vous"
+        showCreateEvent={true}
+      />
 
       <main className="container mx-auto px-4 py-8">
         {/* Filtres */}
