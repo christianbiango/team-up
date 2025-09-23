@@ -1,13 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import SimpleNavbar from "@/components/navigation/SimpleNavbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -15,19 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import { ArrowLeft, User, Heart, Trophy, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+import { Heart, Save, Trophy, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface Profile {
@@ -229,288 +230,282 @@ const EditProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
-      <div className="container mx-auto max-w-2xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="village-outline"
-            onClick={() => router.push("/profile")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Retour au profil
-          </Button>
-          <h1 className="text-3xl font-bold text-earth-brown">
-            Modifier le profil
-          </h1>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Informations de base */}
-            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <User className="h-5 w-5 text-coral-warm" />
-                  Informations de base
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom d&apos;utilisateur *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="mon_pseudo_cool" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Votre identifiant unique sur la plateforme
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="full_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom complet *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Jean Dupont" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Biographie</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Parlez-nous de vous, de vos passions sportives..."
-                          className="min-h-[100px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Contact et localisation */}
-            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-coral-warm" />
-                  Contact et localisation
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Téléphone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="06 12 34 56 78" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Localisation</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Paris, France" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Ville ou région pour trouver des événements près de chez
-                        vous
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Préférences sportives */}
-            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-earth-brown flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-coral-warm" />
-                  Préférences sportives
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="skill_level"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Niveau général</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
+    <>
+      <SimpleNavbar
+        title="Modifier le profil"
+        backTo="/profile"
+        backLabel="Mon profil"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
+        <div className="container mx-auto max-w-2xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Informations de base */}
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <User className="h-5 w-5 text-coral-warm" />
+                    Informations de base
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom d&apos;utilisateur *</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
+                          <Input placeholder="mon_pseudo_cool" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          {SKILL_LEVELS.map((level) => (
-                            <SelectItem key={level.value} value={level.value}>
-                              {level.label}
-                            </SelectItem>
+                        <FormDescription>
+                          Votre identifiant unique sur la plateforme
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="full_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom complet *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Jean Dupont" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Biographie</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Parlez-nous de vous, de vos passions sportives..."
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Contact et localisation */}
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-coral-warm" />
+                    Contact et localisation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Téléphone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="06 12 34 56 78" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Localisation</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Paris, France" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Ville ou région pour trouver des événements près de
+                          chez vous
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Préférences sportives */}
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
+                <CardHeader>
+                  <CardTitle className="text-earth-brown flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-coral-warm" />
+                    Préférences sportives
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="skill_level"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Niveau général</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {SKILL_LEVELS.map((level) => (
+                              <SelectItem key={level.value} value={level.value}>
+                                {level.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="favorite_sports"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Sports préférés</FormLabel>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                          {SPORTS.map((sport) => (
+                            <FormField
+                              key={sport}
+                              control={form.control}
+                              name="favorite_sports"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={sport}
+                                    className="flex flex-row items-start space-x-3 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(sport)}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([
+                                                ...field.value,
+                                                sport,
+                                              ])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== sport
+                                                )
+                                              );
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm font-normal">
+                                      {sport}
+                                    </FormLabel>
+                                  </FormItem>
+                                );
+                              }}
+                            />
                           ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="favorite_sports"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Sports préférés</FormLabel>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                        {SPORTS.map((sport) => (
-                          <FormField
-                            key={sport}
-                            control={form.control}
-                            name="favorite_sports"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={sport}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(sport)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([
-                                              ...field.value,
-                                              sport,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== sport
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="text-sm font-normal">
-                                    {sport}
-                                  </FormLabel>
-                                </FormItem>
-                              );
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="availability_days"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Jours de disponibilité</FormLabel>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                          {DAYS.map((day) => (
+                            <FormField
+                              key={day.value}
+                              control={form.control}
+                              name="availability_days"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={day.value}
+                                    className="flex flex-row items-start space-x-3 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(
+                                          day.value
+                                        )}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([
+                                                ...field.value,
+                                                day.value,
+                                              ])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== day.value
+                                                )
+                                              );
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm font-normal">
+                                      {day.label}
+                                    </FormLabel>
+                                  </FormItem>
+                                );
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
 
-                <FormField
-                  control={form.control}
-                  name="availability_days"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Jours de disponibilité</FormLabel>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                        {DAYS.map((day) => (
-                          <FormField
-                            key={day.value}
-                            control={form.control}
-                            name="availability_days"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={day.value}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(day.value)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([
-                                              ...field.value,
-                                              day.value,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== day.value
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="text-sm font-normal">
-                                    {day.label}
-                                  </FormLabel>
-                                </FormItem>
-                              );
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Boutons d'action */}
-            <div className="flex gap-4 justify-end">
-              <Button
-                type="button"
-                variant="village-outline"
-                onClick={() => router.push("/profile")}
-              >
-                Annuler
-              </Button>
-              <Button
-                type="submit"
-                variant="village"
-                disabled={isLoading}
-                className="gap-2"
-              >
-                {isLoading ? "Enregistrement..." : "Enregistrer"}
-                <Save className="h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </Form>
+              {/* Boutons d'action */}
+              <div className="flex gap-4 justify-end">
+                <Button
+                  type="button"
+                  variant="village-outline"
+                  onClick={() => router.push("/profile")}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  variant="village"
+                  disabled={isLoading}
+                  className="gap-2"
+                >
+                  {isLoading ? "Enregistrement..." : "Enregistrer"}
+                  <Save className="h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

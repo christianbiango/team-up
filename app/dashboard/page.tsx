@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import AuthNavbar from "@/components/navigation/AuthNavbar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,24 +9,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Plus,
-  LogOut,
-  User as UserIcon,
-  Trophy,
-  Clock,
-  Star,
-  BarChart3,
-} from "lucide-react";
-import { toast } from "sonner";
-import teamupLogo from "@/public/assets/teamup-logo.png";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import Image from "next/image";
+import {
+  BarChart3,
+  Calendar,
+  Clock,
+  MapPin,
+  Plus,
+  Star,
+  Trophy,
+  Users,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface Profile {
   id: string;
@@ -154,46 +151,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-warm border-b border-coral-warm/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Image src={teamupLogo} alt="TeamUp!" className="h-10 w-auto" />
-              <div>
-                <h1 className="text-xl font-bold text-earth-brown">
-                  Salut {profile?.full_name?.split(" ")[0]} ! 👋
-                </h1>
-                <p className="text-sm text-earth-brown/70">
-                  Prêt pour de nouvelles aventures sportives ?
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="village-outline"
-                size="sm"
-                onClick={() => router.push("/stats")}
-                className="mr-2"
-              >
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Stats
-              </Button>
-              <Button
-                variant="village-outline"
-                size="sm"
-                onClick={() => router.push("/profile")}
-              >
-                <UserIcon className="h-4 w-4 mr-2" />
-                Profil
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AuthNavbar userName={profile?.full_name} onSignOut={handleSignOut} />
 
       <main className="container mx-auto px-4 py-8">
         {/* Quick Actions */}

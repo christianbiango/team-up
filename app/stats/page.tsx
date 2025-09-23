@@ -1,22 +1,21 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SimpleNavbar from "@/components/navigation/SimpleNavbar";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { createClient } from "@/lib/supabase/client";
 import {
-  ArrowLeft,
-  Trophy,
-  TrendingUp,
-  Calendar,
-  Users,
-  Target,
   Award,
   BarChart3,
+  Calendar,
   Clock,
+  Target,
+  TrendingUp,
+  Trophy,
+  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface UserStats {
@@ -312,148 +311,189 @@ const Stats = () => {
   const activityLevel = getActivityLevel();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
-      <div className="container mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="village-outline"
-            onClick={() => router.push("/dashboard")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Retour au tableau de bord
-          </Button>
-          <h1 className="text-4xl font-bold text-earth-brown">
-            Mes Statistiques
-          </h1>
-          <div className="w-32" /> {/* Spacer pour centrer le titre */}
-        </div>
-
-        {/* Niveau d'activité */}
-        <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
-          <CardContent className="p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-earth-brown mb-2">
-                  Niveau d&apos;activité : {activityLevel.level}
-                </h2>
-                <p className="text-earth-brown/70">
-                  Continuez à participer pour débloquer de nouveaux niveaux !
-                </p>
+    <>
+      <SimpleNavbar
+        title="Mes Statistiques"
+        backTo="/dashboard"
+        backLabel="Tableau de bord"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
+        <div className="container mx-auto max-w-6xl p-4">
+          {/* Niveau d'activité */}
+          <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-earth-brown mb-2">
+                    Niveau d&apos;activité : {activityLevel.level}
+                  </h2>
+                  <p className="text-earth-brown/70">
+                    Continuez à participer pour débloquer de nouveaux niveaux !
+                  </p>
+                </div>
+                <div className="text-6xl">
+                  {activityLevel.level === "Légende"
+                    ? "👑"
+                    : activityLevel.level === "Expert"
+                    ? "🏆"
+                    : activityLevel.level === "Avancé"
+                    ? "⭐"
+                    : activityLevel.level === "Intermédiaire"
+                    ? "🌟"
+                    : activityLevel.level === "Débutant"
+                    ? "🚀"
+                    : "🌱"}
+                </div>
               </div>
-              <div className="text-6xl">
-                {activityLevel.level === "Légende"
-                  ? "👑"
-                  : activityLevel.level === "Expert"
-                  ? "🏆"
-                  : activityLevel.level === "Avancé"
-                  ? "⭐"
-                  : activityLevel.level === "Intermédiaire"
-                  ? "🌟"
-                  : activityLevel.level === "Débutant"
-                  ? "🚀"
-                  : "🌱"}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-earth-brown/70">
+                  <span>Progression</span>
+                  <span>{activityLevel.progress}%</span>
+                </div>
+                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${activityLevel.color} transition-all duration-1000`}
+                    style={{ width: `${activityLevel.progress}%` }}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-earth-brown/70">
-                <span>Progression</span>
-                <span>{activityLevel.progress}%</span>
-              </div>
-              <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${activityLevel.color} transition-all duration-1000`}
-                  style={{ width: `${activityLevel.progress}%` }}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Métriques principales */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white shadow-warm rounded-3xl border-0">
-            <CardContent className="p-6 text-center">
-              <Calendar className="h-12 w-12 mx-auto mb-4" />
-              <div className="text-3xl font-bold mb-2">
-                {stats?.eventsCreated || 0}
-              </div>
-              <div className="text-sm opacity-90">Événements créés</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-meadow-green to-sunshine-yellow text-white shadow-warm rounded-3xl border-0">
-            <CardContent className="p-6 text-center">
-              <Users className="h-12 w-12 mx-auto mb-4" />
-              <div className="text-3xl font-bold mb-2">
-                {stats?.eventsParticipated || 0}
-              </div>
-              <div className="text-sm opacity-90">Participations</div>
-            </CardContent>
-          </Card>
+          {/* Métriques principales */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white shadow-warm rounded-3xl border-0">
+              <CardContent className="p-6 text-center">
+                <Calendar className="h-12 w-12 mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">
+                  {stats?.eventsCreated || 0}
+                </div>
+                <div className="text-sm opacity-90">Événements créés</div>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-sunshine-yellow to-terracotta text-white shadow-warm rounded-3xl border-0">
-            <CardContent className="p-6 text-center">
-              <Target className="h-12 w-12 mx-auto mb-4" />
-              <div className="text-3xl font-bold mb-2">
-                {stats?.totalParticipants || 0}
-              </div>
-              <div className="text-sm opacity-90">Participants attirés</div>
-            </CardContent>
-          </Card>
+            <Card className="bg-gradient-to-br from-meadow-green to-sunshine-yellow text-white shadow-warm rounded-3xl border-0">
+              <CardContent className="p-6 text-center">
+                <Users className="h-12 w-12 mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">
+                  {stats?.eventsParticipated || 0}
+                </div>
+                <div className="text-sm opacity-90">Participations</div>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-terracotta to-coral-warm text-white shadow-warm rounded-3xl border-0">
-            <CardContent className="p-6 text-center">
-              <Trophy className="h-12 w-12 mx-auto mb-4" />
-              <div className="text-3xl font-bold mb-2">
-                {stats?.achievements.length || 0}
-              </div>
-              <div className="text-sm opacity-90">Succès débloqués</div>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="bg-gradient-to-br from-sunshine-yellow to-terracotta text-white shadow-warm rounded-3xl border-0">
+              <CardContent className="p-6 text-center">
+                <Target className="h-12 w-12 mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">
+                  {stats?.totalParticipants || 0}
+                </div>
+                <div className="text-sm opacity-90">Participants attirés</div>
+              </CardContent>
+            </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Sports favoris */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-            <CardHeader>
-              <CardTitle className="text-earth-brown flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-coral-warm" />
-                Sports les plus pratiqués
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {stats?.favoritesSports.length ? (
+            <Card className="bg-gradient-to-br from-terracotta to-coral-warm text-white shadow-warm rounded-3xl border-0">
+              <CardContent className="p-6 text-center">
+                <Trophy className="h-12 w-12 mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">
+                  {stats?.achievements.length || 0}
+                </div>
+                <div className="text-sm opacity-90">Succès débloqués</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Sports favoris */}
+            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+              <CardHeader>
+                <CardTitle className="text-earth-brown flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-coral-warm" />
+                  Sports les plus pratiqués
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {stats?.favoritesSports.length ? (
+                  <div className="space-y-4">
+                    {stats.favoritesSports.map((sport, index) => (
+                      <div
+                        key={sport.sport}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">
+                            {index === 0
+                              ? "🥇"
+                              : index === 1
+                              ? "🥈"
+                              : index === 2
+                              ? "🥉"
+                              : "🏅"}
+                          </span>
+                          <span className="font-medium text-earth-brown">
+                            {sport.sport}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm text-earth-brown/70">
+                            {sport.count} événements
+                          </div>
+                          <Progress
+                            value={
+                              (sport.count /
+                                (stats.favoritesSports[0]?.count || 1)) *
+                              100
+                            }
+                            className="w-20 h-2"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-earth-brown/60 italic text-center py-8">
+                    Participez à des événements pour voir vos sports favoris !
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Activité mensuelle */}
+            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
+              <CardHeader>
+                <CardTitle className="text-earth-brown flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-coral-warm" />
+                  Activité des 6 derniers mois
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  {stats.favoritesSports.map((sport, index) => (
+                  {stats?.monthlyActivity.map((month) => (
                     <div
-                      key={sport.sport}
+                      key={month.month}
                       className="flex items-center justify-between"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">
-                          {index === 0
-                            ? "🥇"
-                            : index === 1
-                            ? "🥈"
-                            : index === 2
-                            ? "🥉"
-                            : "🏅"}
-                        </span>
-                        <span className="font-medium text-earth-brown">
-                          {sport.sport}
-                        </span>
-                      </div>
+                      <span className="font-medium text-earth-brown capitalize">
+                        {month.month}
+                      </span>
                       <div className="flex items-center gap-2">
-                        <div className="text-sm text-earth-brown/70">
-                          {sport.count} événements
-                        </div>
+                        <span className="text-sm text-earth-brown/70">
+                          {month.events} événements
+                        </span>
                         <Progress
                           value={
-                            (sport.count /
-                              (stats.favoritesSports[0]?.count || 1)) *
-                            100
+                            month.events > 0
+                              ? Math.max(
+                                  (month.events /
+                                    Math.max(
+                                      ...stats.monthlyActivity.map(
+                                        (m) => m.events
+                                      )
+                                    )) *
+                                    100,
+                                  10
+                                )
+                              : 0
                           }
                           className="w-20 h-2"
                         />
@@ -461,159 +501,114 @@ const Stats = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-earth-brown/60 italic text-center py-8">
-                  Participez à des événements pour voir vos sports favoris !
-                </p>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Activité mensuelle */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
-            <CardHeader>
-              <CardTitle className="text-earth-brown flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-coral-warm" />
-                Activité des 6 derniers mois
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.monthlyActivity.map((month) => (
-                  <div
-                    key={month.month}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="font-medium text-earth-brown capitalize">
-                      {month.month}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-earth-brown/70">
-                        {month.events} événements
-                      </span>
-                      <Progress
-                        value={
-                          month.events > 0
-                            ? Math.max(
-                                (month.events /
-                                  Math.max(
-                                    ...stats.monthlyActivity.map(
-                                      (m) => m.events
-                                    )
-                                  )) *
-                                  100,
-                                10
-                              )
-                            : 0
-                        }
-                        className="w-20 h-2"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Succès débloqués */}
-        <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mt-8">
-          <CardHeader>
-            <CardTitle className="text-earth-brown flex items-center gap-2">
-              <Award className="h-5 w-5 text-coral-warm" />
-              Succès et achievements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {ACHIEVEMENTS.map((achievement) => {
-                const isUnlocked = stats?.achievements.includes(achievement.id);
-                return (
-                  <div
-                    key={achievement.id}
-                    className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
-                      isUnlocked
-                        ? "bg-gradient-to-br from-coral-warm/10 to-sunshine-yellow/10 border-coral-warm/30"
-                        : "bg-gray-50 border-gray-200 opacity-60"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-2xl">{achievement.icon}</span>
-                      <h3
-                        className={`font-semibold ${
-                          isUnlocked ? "text-earth-brown" : "text-gray-500"
-                        }`}
-                      >
-                        {achievement.name}
-                      </h3>
-                      {isUnlocked && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-coral-warm/20 text-coral-warm ml-auto"
-                        >
-                          Débloqué
-                        </Badge>
-                      )}
-                    </div>
-                    <p
-                      className={`text-sm ${
-                        isUnlocked ? "text-earth-brown/70" : "text-gray-400"
-                      }`}
-                    >
-                      {achievement.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Résumé du profil */}
-        {profile && (
+          {/* Succès débloqués */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mt-8">
             <CardHeader>
               <CardTitle className="text-earth-brown flex items-center gap-2">
-                <Clock className="h-5 w-5 text-coral-warm" />
-                Résumé du profil
+                <Award className="h-5 w-5 text-coral-warm" />
+                Succès et achievements
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-sm text-earth-brown/60 mb-1">
-                    Membre depuis
-                  </div>
-                  <div className="font-semibold text-earth-brown">
-                    {new Date(profile.created_at).toLocaleDateString("fr-FR", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm text-earth-brown/60 mb-1">
-                    Niveau déclaré
-                  </div>
-                  <div className="font-semibold text-earth-brown capitalize">
-                    {getSkillLevelLabel(profile.skill_level)}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm text-earth-brown/60 mb-1">
-                    Sports préférés déclarés
-                  </div>
-                  <div className="font-semibold text-earth-brown">
-                    {profile.favorite_sports.length} sport
-                    {profile.favorite_sports.length > 1 ? "s" : ""}
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {ACHIEVEMENTS.map((achievement) => {
+                  const isUnlocked = stats?.achievements.includes(
+                    achievement.id
+                  );
+                  return (
+                    <div
+                      key={achievement.id}
+                      className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                        isUnlocked
+                          ? "bg-gradient-to-br from-coral-warm/10 to-sunshine-yellow/10 border-coral-warm/30"
+                          : "bg-gray-50 border-gray-200 opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-2xl">{achievement.icon}</span>
+                        <h3
+                          className={`font-semibold ${
+                            isUnlocked ? "text-earth-brown" : "text-gray-500"
+                          }`}
+                        >
+                          {achievement.name}
+                        </h3>
+                        {isUnlocked && (
+                          <Badge
+                            variant="secondary"
+                            className="bg-coral-warm/20 text-coral-warm ml-auto"
+                          >
+                            Débloqué
+                          </Badge>
+                        )}
+                      </div>
+                      <p
+                        className={`text-sm ${
+                          isUnlocked ? "text-earth-brown/70" : "text-gray-400"
+                        }`}
+                      >
+                        {achievement.description}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
-        )}
+
+          {/* Résumé du profil */}
+          {profile && (
+            <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mt-8">
+              <CardHeader>
+                <CardTitle className="text-earth-brown flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-coral-warm" />
+                  Résumé du profil
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-sm text-earth-brown/60 mb-1">
+                      Membre depuis
+                    </div>
+                    <div className="font-semibold text-earth-brown">
+                      {new Date(profile.created_at).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm text-earth-brown/60 mb-1">
+                      Niveau déclaré
+                    </div>
+                    <div className="font-semibold text-earth-brown capitalize">
+                      {getSkillLevelLabel(profile.skill_level)}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm text-earth-brown/60 mb-1">
+                      Sports préférés déclarés
+                    </div>
+                    <div className="font-semibold text-earth-brown">
+                      {profile.favorite_sports.length} sport
+                      {profile.favorite_sports.length > 1 ? "s" : ""}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
