@@ -88,7 +88,7 @@ const Dashboard = () => {
 
       if (!profileData) {
         // No profile found, redirect to profile setup
-        router.push("/profile-setup");
+        router.push("/profile/creer");
         return;
       }
 
