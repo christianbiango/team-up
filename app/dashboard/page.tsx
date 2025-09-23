@@ -150,7 +150,6 @@ const Dashboard = () => {
       </div>
     );
   }
-  console.log("profile fav sport", profile);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
