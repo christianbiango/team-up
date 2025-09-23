@@ -86,7 +86,7 @@ const Profile = () => {
       if (error) {
         if (error.code === "PGRST116") {
           // Aucun profil trouvé
-          router.push("/profile-setup");
+          router.push("/profile/creer");
           return;
         }
         throw error;
@@ -131,7 +131,7 @@ const Profile = () => {
           </p>
           <Button
             variant="village"
-            onClick={() => router.push("/profile-setup")}
+            onClick={() => router.push("/profile/creer")}
           >
             Créer mon profil
           </Button>

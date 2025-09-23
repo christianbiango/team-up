@@ -1,5 +1,4 @@
-"use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,23 +24,12 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import { ArrowLeft, User, Heart, Trophy, Save } from "lucide-react";
+import { User, Heart, Trophy } from "lucide-react";
+import teamupLogo from "@/assets/teamup-logo.png";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-
-interface Profile {
-  id: string;
-  user_id: string;
-  username: string;
-  full_name: string;
-  bio: string | null;
-  phone: string | null;
-  location: string | null;
-  skill_level: string;
-  favorite_sports: string[];
-  availability_days: string[];
-}
+import Image from "next/image";
 
 const profileSchema = z.object({
   username: z
@@ -98,152 +86,95 @@ const DAYS = [
   { value: "sunday", label: "Dimanche" },
 ];
 
-const EditProfile = () => {
+const ProfileSetup = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: "",
-      full_name: "",
-      bio: "",
-      phone: "",
-      location: "",
       skill_level: "beginner",
       favorite_sports: [],
       availability_days: [],
     },
   });
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
+  const onSubmit = async (data: ProfileFormData) => {
+    setIsLoading(true);
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (!user) {
+        toast.error(
+          "Erreur d'authentification : Vous devez être connecté pour créer un profil."
+        );
         router.push("/auth");
         return;
       }
 
-      const { data: profileData, error } = await supabase
+      // Vérifier si le nom d'utilisateur est disponible
+      const { data: existingProfile } = await supabase
         .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
+        .select("username")
+        .eq("username", data.username)
         .single();
 
-      if (error) {
-        if (error.code === "PGRST116") {
-          router.push("/profile/creer");
-          return;
-        }
-        throw error;
+      if (existingProfile) {
+        form.setError("username", {
+          type: "manual",
+          message: "Ce nom d'utilisateur est déjà pris",
+        });
+        return;
       }
 
-      setProfile(profileData);
+      const profileData = {
+        user_id: user.id,
+        username: data.username,
+        full_name: data.full_name,
+        bio: data.bio || null,
+        phone: data.phone || null,
+        location: data.location || null,
+        skill_level: data.skill_level,
+        favorite_sports: data.favorite_sports,
+        availability_days: data.availability_days,
+      };
 
-      // Remplir le formulaire avec les données existantes
-      form.reset({
-        username: profileData.username,
-        full_name: profileData.full_name,
-        bio: profileData.bio || "",
-        phone: profileData.phone || "",
-        location: profileData.location || "",
-        skill_level: profileData.skill_level,
-        favorite_sports: profileData.favorite_sports || [],
-        availability_days: profileData.availability_days || [],
-      });
-    } catch (error: unknown) {
-      console.error("Error loading profile:", error);
-      toast.error("Impossible de charger le profil.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onSubmit = async (data: ProfileFormData) => {
-    if (!profile) return;
-
-    setIsLoading(true);
-    try {
-      // Vérifier si le nom d'utilisateur est disponible (sauf si c'est le même)
-      if (data.username !== profile.username) {
-        const { data: existingProfile } = await supabase
-          .from("profiles")
-          .select("username")
-          .eq("username", data.username)
-          .single();
-
-        if (existingProfile) {
-          form.setError("username", {
-            type: "manual",
-            message: "Ce nom d'utilisateur est déjà pris",
-          });
-          return;
-        }
-      }
-
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          username: data.username,
-          full_name: data.full_name,
-          bio: data.bio || null,
-          phone: data.phone || null,
-          location: data.location || null,
-          skill_level: data.skill_level,
-          favorite_sports: data.favorite_sports,
-          availability_days: data.availability_days,
-        })
-        .eq("id", profile.id);
+      const { error } = await supabase.from("profiles").insert([profileData]);
 
       if (error) throw error;
 
       toast.success(
-        "Profil mis à jour ! Vos modifications ont été enregistrées avec succès."
+        "Profil créé ! Votre profil a été créé avec succès. Bienvenue dans la communauté TeamUp !"
       );
 
-      router.push("/profile");
+      router.push("/dashboard");
     } catch (error: unknown) {
-      console.error("Error updating profile:", error);
-      toast.error("Une erreur est survenue lors de la mise à jour du profil.");
+      console.error("Error creating profile:", error);
+      toast.error("Une erreur est survenue lors de la création du profil.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-coral-warm"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
       <div className="container mx-auto max-w-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="village-outline"
-            onClick={() => router.push("/profile")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Retour au profil
-          </Button>
-          <h1 className="text-3xl font-bold text-earth-brown">
-            Modifier le profil
+        <div className="text-center mb-8">
+          <Image
+            src={teamupLogo}
+            alt="TeamUp!"
+            className="h-16 w-auto mx-auto mb-4"
+          />
+          <h1 className="text-4xl font-bold text-earth-brown mb-2">
+            Créons votre profil !
           </h1>
+          <p className="text-earth-brown/70 text-lg">
+            Quelques informations pour personnaliser votre expérience
+          </p>
         </div>
 
         <Form {...form}>
@@ -368,7 +299,7 @@ const EditProfile = () => {
                       <FormLabel>Niveau général</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
+                        defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -488,23 +419,17 @@ const EditProfile = () => {
               </CardContent>
             </Card>
 
-            {/* Boutons d'action */}
-            <div className="flex gap-4 justify-end">
-              <Button
-                type="button"
-                variant="village-outline"
-                onClick={() => router.push("/profile")}
-              >
-                Annuler
-              </Button>
+            {/* Bouton de création */}
+            <div className="text-center">
               <Button
                 type="submit"
                 variant="village"
+                size="lg"
                 disabled={isLoading}
-                className="gap-2"
+                className="px-12 py-3 text-lg gap-3"
               >
-                {isLoading ? "Enregistrement..." : "Enregistrer"}
-                <Save className="h-4 w-4" />
+                {isLoading ? "Création..." : "Créer mon profil"}
+                <Trophy className="h-5 w-5" />
               </Button>
             </div>
           </form>
@@ -514,4 +439,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default ProfileSetup;
