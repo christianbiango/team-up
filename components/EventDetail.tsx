@@ -22,6 +22,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import SimpleNavbar from "./navigation/SimpleNavbar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Event {
   id: string;
@@ -71,6 +82,7 @@ const EventDetail = ({ id }: EventDetailProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userParticipation, setUserParticipation] =
     useState<Participant | null>(null);
+  const [open, setOpen] = useState(false);
 
   const supabase = createClient();
 
@@ -379,14 +391,35 @@ const EventDetail = ({ id }: EventDetailProps) => {
                         <Edit className="h-4 w-4" />
                         <span>Modifier</span>
                       </Button>
-                      <Button
-                        key="delete"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleDeleteEvent}
-                      >
-                        <Trash2 className="h-4 w-4" /> Supprimer
-                      </Button>
+                      <AlertDialog open={open} onOpenChange={setOpen}>
+                        <AlertDialogTrigger asChild>
+                          <Button key="delete" variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" /> Supprimer
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-sm w-[90%] bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-soft border-0">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-earth-brown text-lg font-semibold">
+                              Confirmation de suppression
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-earth-brown mt-2">
+                              Êtes-vous sûr de vouloir supprimer cet événement ?
+                              Cette action est irréversible.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="mt-4 flex justify-end gap-3">
+                            <AlertDialogCancel className="bg-cream-warm hover:bg-cream-warm/90 text-earth-brown rounded-lg px-4 py-2">
+                              Annuler
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDeleteEvent}
+                              className="bg-coral-warm hover:bg-coral-warm/90 text-white rounded-lg px-4 py-2"
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 ) : (
@@ -479,12 +512,7 @@ const EventDetail = ({ id }: EventDetailProps) => {
   async function handleDeleteEvent() {
     if (!id) return;
 
-    const confirmed = window.confirm(
-      "Êtes-vous sûr de vouloir supprimer cet événement ?"
-    );
-
-    if (!confirmed) return;
-
+    setOpen(false);
     const supabase = createClient();
 
     try {
