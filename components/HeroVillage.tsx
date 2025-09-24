@@ -17,22 +17,22 @@ import HomeNavbar from "./navigation/HomeNavbar";
 const HeroVillage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 relative overflow-hidden">
-      {/* Éléments décoratifs organiques */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-gradient-to-br from-sunshine-yellow to-coral-warm rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute top-1/3 right-20 w-32 h-32 bg-gradient-to-br from-meadow-green to-sunshine-yellow rounded-full opacity-15 animate-bounce"></div>
       <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-gradient-to-br from-coral-warm to-terracotta rounded-full opacity-25"></div>
-
-      {/* Header organique */}
       <HomeNavbar />
-
-      {/* Hero Section organique */}
       <section className="container mx-auto px-4 py-12 text-center relative z-10">
         <div className="mx-auto max-w-5xl">
           <div className="relative">
-            <Sun
-              className="absolute -top-8 left-1/2 transform -translate-x-1/2 h-16 w-16 text-sunshine-yellow animate-spin"
-              style={{ animationDuration: "20s" }}
-            />
+            <div
+              className="absolute -top-8 left-1/2 animate-slide-x"
+              style={{ animationDuration: "6s" }} // durée pour l’aller-retour
+            >
+              <Sun
+                className="h-16 w-16 text-sunshine-yellow animate-spin"
+                style={{ animationDuration: "20s", transformOrigin: "center" }}
+              />
+            </div>
             <h2 className="mb-8 text-6xl font-black text-earth-brown leading-tight transform hover:scale-105 transition-transform duration-500">
               Le sport,
               <span className="block bg-gradient-to-r from-coral-warm via-sunshine-yellow to-meadow-green bg-clip-text text-transparent animate-pulse">
@@ -73,8 +73,6 @@ const HeroVillage = () => {
           </div>
         </div>
       </section>
-
-      {/* Features en cercles organiques */}
       <section className="container mx-auto px-4 py-16 relative z-10">
         <div className="text-center mb-16">
           <h3 className="text-4xl font-bold text-earth-brown mb-6 transform hover:scale-105 transition-transform duration-300">
@@ -130,11 +128,9 @@ const HeroVillage = () => {
           />
         </div>
       </section>
-
-      {/* CTA finale en forme de festival */}
       <section className="container mx-auto px-4 py-20 relative z-10">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-coral-warm via-sunshine-yellow via-meadow-green to-terracotta rounded-[3rem] transform rotate-1 opacity-20"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-coral-warm via-sunshine-yellow to-terracotta rounded-[3rem] transform rotate-1 opacity-20"></div>
           <div className="relative bg-gradient-to-r from-coral-warm via-sunshine-yellow to-meadow-green p-12 rounded-[3rem] text-center text-white shadow-2xl transform hover:scale-105 transition-all duration-500">
             <div className="flex justify-center gap-4 mb-6">
               <Heart className="h-12 w-12 animate-pulse" />
@@ -144,7 +140,7 @@ const HeroVillage = () => {
                 style={{ animationDuration: "3s" }}
               />
             </div>
-            <h3 className="text-5xl font-black mb-6">
+            <h3 className="text-4xl sm:text-5xl font-black mb-6">
               🎉 Prêt pour l&apos;aventure ?
             </h3>
             <p className="text-2xl mb-8 opacity-95 font-medium">

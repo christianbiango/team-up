@@ -10,7 +10,6 @@ const Footer = () => {
     <footer className="bg-gradient-to-r from-cream-warm via-sunshine-light/30 to-coral-light/20 border-t border-coral-warm/20">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo et description */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image src={teamupLogo} alt="TeamUp!" className="h-12 w-auto" />
@@ -34,8 +33,6 @@ const Footer = () => {
               <InstallButton />
             </div>
           </div>
-
-          {/* Liens rapides */}
           <div>
             <h4 className="text-lg font-bold text-earth-brown mb-4">
               Navigation
@@ -75,8 +72,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
-          {/* Contact */}
           <div>
             <h4 className="text-lg font-bold text-earth-brown mb-4">Contact</h4>
             <ul className="space-y-3">
@@ -95,32 +90,30 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Ligne de séparation et copyright */}
         <div className="border-t border-coral-warm/20 mt-8 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-earth-brown/60 text-sm">
               © 2024 TeamUp! - Tous droits réservés
             </p>
             <div className="flex gap-6 text-sm">
-              <a
-                href="#"
+              <Link
+                href="/mentions-legales"
                 className="text-earth-brown/60 hover:text-coral-warm transition-colors"
               >
                 Mentions légales
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/politique-de-confidentialite"
                 className="text-earth-brown/60 hover:text-coral-warm transition-colors"
               >
                 Politique de confidentialité
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/cgu"
                 className="text-earth-brown/60 hover:text-coral-warm transition-colors"
               >
                 CGU
-              </a>
+              </Link>
             </div>
           </div>
         </div>
