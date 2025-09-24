@@ -56,7 +56,7 @@ const HeroVillage = () => {
               variant="village"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
-              onClick={() => (window.location.href = "/create-event")}
+              onClick={() => (window.location.href = "/evenements/creer")}
             >
               <Heart className="h-6 w-6" />
               Créer un événement
@@ -65,7 +65,7 @@ const HeroVillage = () => {
               variant="village-soft"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
-              onClick={() => (window.location.href = "/events")}
+              onClick={() => (window.location.href = "/evenements")}
             >
               <Users className="h-6 w-6" />
               Découvrir les événements

@@ -8,13 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  CalendarIcon,
-  Clock,
-  MapPin,
-  Trophy,
-  Users
-} from "lucide-react";
+import { CalendarIcon, Clock, MapPin, Trophy, Users } from "lucide-react";
 
 import { SimpleNavbar } from "@/components/navigation/SimpleNavbar";
 import { Button } from "@/components/ui/button";
@@ -136,7 +130,6 @@ export default function CreateEventPage() {
         price_per_person: data.price_per_person,
         is_private: data.is_private,
         organizer_id: user.id,
-        current_participants: 1,
         status: "open" as const,
       };
 
@@ -145,7 +138,7 @@ export default function CreateEventPage() {
 
       toast.success("Votre événement a été créé avec succès.");
 
-      router.push("/events");
+      router.push("/evenements");
     } catch (error) {
       console.error("Error creating event:", error);
       toast.error(

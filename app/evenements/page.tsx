@@ -434,7 +434,7 @@ const Events = () => {
                     .map((event) => ({
                       position: { lat: event.latitude!, lng: event.longitude! },
                       title: event.title,
-                      onClick: () => router.push(`/events/${event.id}`),
+                      onClick: () => router.push(`/evenements/${event.id}`),
                     }))}
                   className="w-full h-96 rounded-2xl shadow-warm"
                 />
@@ -473,7 +473,7 @@ const Events = () => {
               <Card
                 key={event.id}
                 className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 hover:scale-105 transition-all duration-300 cursor-pointer"
-                onClick={() => router.push(`/events/${event.id}`)}
+                onClick={() => router.push(`/evenements/${event.id}`)}
               >
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">

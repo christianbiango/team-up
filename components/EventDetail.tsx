@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import { useOfflineEvents } from "@/hooks/useOfflineEvents";
 import GoogleMap from "@/components/GoogleMap";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import SimpleNavbar from "./navigation/SimpleNavbar";
+import { useOfflineEvents } from "@/hooks/offline/useOfflineEvents";
 
 interface Event {
   id: string;
@@ -64,7 +64,7 @@ interface EventDetailProps {
 
 const EventDetail = ({ id }: EventDetailProps) => {
   const router = useRouter();
-  // const { joinEvent, leaveEvent } = useOfflineEvents();
+  const { joinEvent, leaveEvent } = useOfflineEvents();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -81,6 +81,15 @@ const EventDetail = ({ id }: EventDetailProps) => {
       getCurrentUser();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const found = participants.find(
+        (p) => p.participant_id === currentUser.id
+      );
+      setUserParticipation(found || null);
+    }
+  }, [currentUser, participants]);
 
   const getCurrentUser = async () => {
     const {
@@ -117,23 +126,15 @@ const EventDetail = ({ id }: EventDetailProps) => {
           .eq("event_id", id)
           .eq("status", "confirmed");
 
-      if (participantsError) console.error(participantsError);
-      else
+      if (participantsError) {
+        console.error(participantsError);
+      } else {
         setParticipants(
           (participantsData || []).map((p) => ({
             ...p,
             profiles: Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
           }))
         );
-
-      if (currentUser) {
-        const userParticipation = participantsData
-          ?.map((p) => ({
-            ...p,
-            profiles: Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
-          }))
-          .find((p) => p.participant_id === currentUser.id);
-        setUserParticipation(userParticipation || null);
       }
     } catch (error) {
       console.error(error);
@@ -143,36 +144,40 @@ const EventDetail = ({ id }: EventDetailProps) => {
     }
   };
 
-  // const handleJoinEvent = async () => {
-  //   if (!event || !currentUser) return;
+  const handleJoinEvent = async () => {
+    if (!event || !currentUser) return;
 
-  //   if (participants.length >= event.max_participants) {
-  //     toast.error("Nombre maximum de participants atteint");
-  //     return;
-  //   }
+    if (participants.length >= event.max_participants) {
+      toast.error("Nombre maximum de participants atteint");
+      return;
+    }
 
-  //   try {
-  //     await joinEvent(event.id, currentUser.id);
-  //     toast.success("Vous participez maintenant à cet événement");
-  //     fetchEventDetails();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Impossible de rejoindre l'événement");
-  //   }
-  // };
+    try {
+      await joinEvent(event.id, currentUser.id);
+      toast.success("Vous participez maintenant à cet événement");
+      fetchEventDetails();
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible de rejoindre l'événement");
+    }
+  };
 
-  // const handleLeaveEvent = async () => {
-  //   if (!userParticipation) return;
+  const handleLeaveEvent = async () => {
+    if (!userParticipation) return;
 
-  //   try {
-  //     await leaveEvent(userParticipation.id);
-  //     toast.success("Vous ne participez plus à cet événement");
-  //     fetchEventDetails();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Impossible d'annuler la participation");
-  //   }
-  // };
+    try {
+      await leaveEvent(userParticipation.id);
+      toast.success("Vous ne participez plus à cet événement");
+
+      setParticipants((prev) =>
+        prev.filter((p) => p.id !== userParticipation.id)
+      );
+      setUserParticipation(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible d'annuler la participation");
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -213,7 +218,7 @@ const EventDetail = ({ id }: EventDetailProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center">
         <div className="text-earth-brown">Chargement...</div>
       </div>
     );
@@ -221,12 +226,12 @@ const EventDetail = ({ id }: EventDetailProps) => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-earth-brown mb-4">
             Événement non trouvé
           </h2>
-          <Button onClick={() => router.push("/events")} variant="outline">
+          <Button onClick={() => router.push("/evenements")} variant="outline">
             Retour aux événements
           </Button>
         </div>
@@ -258,10 +263,10 @@ const EventDetail = ({ id }: EventDetailProps) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20">
+    <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
       <SimpleNavbar
         title={event?.title || "Événement"}
-        backTo="/events"
+        backTo="/evenements"
         backLabel="Événements"
         actions={headerActions}
       />
@@ -387,34 +392,43 @@ const EventDetail = ({ id }: EventDetailProps) => {
             {/* Action Button */}
             <Card>
               <CardContent className="pt-6">
-                {canJoin && (
-                  <Button
-                    onClick={() => console.log("Join event")}
-                    className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
-                    disabled={participants.length >= event.max_participants}
-                  >
-                    {participants.length >= event.max_participants
-                      ? "Événement complet"
-                      : "Rejoindre l'événement"}
-                  </Button>
-                )}
-                {canLeave && (
-                  <Button
-                    onClick={() => console.log("Leave event")}
-                    variant="outline"
-                    className="w-full border-coral-warm text-coral-warm hover:bg-coral-warm hover:text-white"
-                    disabled
-                  >
-                    Annuler ma participation
-                  </Button>
-                )}
-                {!currentUser && (
-                  <Button
-                    onClick={() => router.push("/auth")}
-                    className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
-                  >
-                    Se connecter pour participer
-                  </Button>
+                {currentUser?.id === event.organizer_id ? (
+                  <p className="text-sm text-earth-brown/70 font-bold">
+                    Vous êtes l&apos;organisateur
+                  </p>
+                ) : (
+                  <>
+                    {canJoin && (
+                      <Button
+                        onClick={handleJoinEvent}
+                        className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
+                        disabled={participants.length >= event.max_participants}
+                      >
+                        {participants.length >= event.max_participants
+                          ? "Événement complet"
+                          : "Rejoindre l'événement"}
+                      </Button>
+                    )}
+
+                    {canLeave && (
+                      <Button
+                        onClick={handleLeaveEvent}
+                        variant="outline"
+                        className="w-full border-coral-warm text-coral-warm hover:bg-coral-warm hover:text-white"
+                      >
+                        Annuler ma participation
+                      </Button>
+                    )}
+
+                    {!currentUser && (
+                      <Button
+                        onClick={() => router.push("/auth")}
+                        className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
+                      >
+                        Se connecter pour participer
+                      </Button>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
