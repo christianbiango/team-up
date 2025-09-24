@@ -1,28 +1,27 @@
 "use client";
 
+import GoogleMap from "@/components/GoogleMap";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useOfflineEvents } from "@/hooks/offline/useOfflineEvents";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 import {
   Calendar,
   Clock,
   DollarSign,
   Edit,
   MapPin,
-  Share2,
   Trash2,
   Trophy,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import GoogleMap from "@/components/GoogleMap";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import SimpleNavbar from "./navigation/SimpleNavbar";
-import { useOfflineEvents } from "@/hooks/offline/useOfflineEvents";
 
 interface Event {
   id: string;
@@ -208,7 +207,6 @@ const EventDetail = ({ id }: EventDetailProps) => {
     return `${remainingMinutes}min`;
   };
 
-  const canEdit = currentUser && event && currentUser.id === event.organizer_id;
   const canJoin =
     currentUser &&
     event &&
@@ -238,43 +236,16 @@ const EventDetail = ({ id }: EventDetailProps) => {
       </div>
     );
   }
-
-  const headerActions = [];
-
-  if (canEdit) {
-    headerActions.push(
-      <Button key="edit" variant="outline" size="sm" className="gap-2">
-        <Edit className="h-4 w-4" />
-        <span className="hidden sm:inline">Modifier</span>
-      </Button>
-    );
-    headerActions.push(
-      <Button key="delete" variant="outline" size="sm">
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    );
-  }
-
-  headerActions.push(
-    <Button key="share" variant="outline" size="sm" className="gap-2">
-      <Share2 className="h-4 w-4" />
-      <span className="hidden sm:inline">Partager</span>
-    </Button>
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
       <SimpleNavbar
         title={event?.title || "Événement"}
         backTo="/evenements"
         backLabel="Événements"
-        actions={headerActions}
       />
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Event Header */}
             <Card>
               <CardHeader>
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -393,9 +364,31 @@ const EventDetail = ({ id }: EventDetailProps) => {
             <Card>
               <CardContent className="pt-6">
                 {currentUser?.id === event.organizer_id ? (
-                  <p className="text-sm text-earth-brown/70 font-bold">
-                    Vous êtes l&apos;organisateur
-                  </p>
+                  <div className="space-y-4">
+                    <p className="text-sm text-earth-brown/70 font-bold">
+                      Vous êtes l&apos;organisateur
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        key="edit"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => router.push(`/evenements/${id}/edit`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span>Modifier</span>
+                      </Button>
+                      <Button
+                        key="delete"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDeleteEvent}
+                      >
+                        <Trash2 className="h-4 w-4" /> Supprimer
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     {canJoin && (
@@ -482,6 +475,39 @@ const EventDetail = ({ id }: EventDetailProps) => {
       </div>
     </div>
   );
+
+  async function handleDeleteEvent() {
+    if (!id) return;
+
+    const confirmed = window.confirm(
+      "Êtes-vous sûr de vouloir supprimer cet événement ?"
+    );
+
+    if (!confirmed) return;
+
+    const supabase = createClient();
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("events").delete().eq("id", id);
+
+      if (error) {
+        console.error("Error deleting event:", error);
+        toast.error("Impossible de supprimer l'événement");
+        return;
+      }
+
+      toast.success("Événement supprimé avec succès");
+      router.push("/evenements");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      toast.error(
+        "Une erreur est survenue lors de la suppression de l'événement."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 };
 
 export default EventDetail;
