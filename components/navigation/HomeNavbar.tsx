@@ -30,6 +30,9 @@ const HomeNavbar = () => {
             </p>
           </div>
         </div>
+        <div className="sm:hidden">
+          <InstallButton />
+        </div>
 
         {/* Desktop Navigation */}
         <div className="hidden sm:flex gap-3">
@@ -77,7 +80,6 @@ const HomeNavbar = () => {
               </div>
 
               <div className="border-t border-earth-brown/10 pt-6 flex flex-col gap-4">
-                <InstallButton />
                 <Button
                   variant="village-outline"
                   className="w-full gap-2 text-sm"
