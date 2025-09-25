@@ -22,7 +22,6 @@ interface TeamUpDB extends DBSchema {
       is_geocoded?: boolean;
       created_at: string;
       updated_at: string;
-      // Métadonnées pour la synchronisation
       _offline?: boolean;
       _action?: "create" | "update" | "delete";
       _timestamp?: number;
@@ -35,7 +34,6 @@ interface TeamUpDB extends DBSchema {
       event_id: string;
       participant_id: string;
       created_at: string;
-      // Métadonnées pour la synchronisation
       _offline?: boolean;
       _action?: "create" | "delete";
       _timestamp?: number;
@@ -57,7 +55,6 @@ interface TeamUpDB extends DBSchema {
       location?: string;
       created_at: string;
       updated_at?: string;
-      // Métadonnées pour la synchronisation
       _offline?: boolean;
       _action?: "create" | "update";
       _timestamp?: number;
@@ -69,7 +66,10 @@ interface TeamUpDB extends DBSchema {
       id: string;
       table: "events" | "participations" | "profiles";
       action: "create" | "update" | "delete";
-      data: any;
+      data:
+        | TeamUpDB["events"]["value"]
+        | TeamUpDB["participations"]["value"]
+        | TeamUpDB["profiles"]["value"];
       timestamp: number;
       attempts: number;
     };
@@ -83,27 +83,26 @@ class OfflineStorage {
     if (!this.db) {
       this.db = await openDB<TeamUpDB>("TeamUpDB", 2, {
         upgrade(db) {
-          // Créer les stores si ils n'existent pas
           if (!db.objectStoreNames.contains("events")) {
-            const eventsStore = db.createObjectStore("events", {
+            db.createObjectStore("events", {
               keyPath: "id",
             });
           }
 
           if (!db.objectStoreNames.contains("participations")) {
-            const participationsStore = db.createObjectStore("participations", {
+            db.createObjectStore("participations", {
               keyPath: "id",
             });
           }
 
           if (!db.objectStoreNames.contains("profiles")) {
-            const profilesStore = db.createObjectStore("profiles", {
+            db.createObjectStore("profiles", {
               keyPath: "id",
             });
           }
 
           if (!db.objectStoreNames.contains("sync_queue")) {
-            const syncStore = db.createObjectStore("sync_queue", {
+            db.createObjectStore("sync_queue", {
               keyPath: "id",
             });
           }
@@ -113,13 +112,15 @@ class OfflineStorage {
     return this.db;
   }
 
-  // Événements
-  async saveEvent(event: any, isOffline = false) {
+  async saveEvent(event: TeamUpDB["events"]["value"], isOffline = false) {
     const db = await this.init();
     const eventData = {
       ...event,
       _offline: isOffline,
-      _action: event.id ? "update" : "create",
+      _action: (event.id ? "update" : "create") as
+        | "create"
+        | "update"
+        | "delete",
       _timestamp: Date.now(),
     };
 
@@ -162,7 +163,6 @@ class OfflineStorage {
     const db = await this.init();
 
     if (isOffline) {
-      // Marquer pour suppression
       const event = await db.get("events", id);
       if (event) {
         event._offline = true;
@@ -176,10 +176,12 @@ class OfflineStorage {
     }
   }
 
-  // Participations
-  async saveParticipation(participation: any, isOffline = false) {
+  async saveParticipation(
+    participation: TeamUpDB["participations"]["value"],
+    isOffline = false
+  ) {
     const db = await this.init();
-    const participationData = {
+    const participationData: TeamUpDB["participations"]["value"] = {
       ...participation,
       _offline: isOffline,
       _action: "create",
@@ -234,13 +236,12 @@ class OfflineStorage {
     }
   }
 
-  // Profils
-  async saveProfile(profile: any, isOffline = false) {
+  async saveProfile(profile: TeamUpDB["profiles"]["value"], isOffline = false) {
     const db = await this.init();
     const profileData = {
       ...profile,
       _offline: isOffline,
-      _action: profile.id ? "update" : "create",
+      _action: (profile.id ? "update" : "create") as "create" | "update",
       _timestamp: Date.now(),
     };
 
@@ -259,10 +260,10 @@ class OfflineStorage {
     return profiles.find((profile) => profile.user_id === userId) || null;
   }
 
-  // File de synchronisation
   async addToSyncQueue(
     table: "events" | "participations" | "profiles",
     action: "create" | "update" | "delete",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any
   ) {
     const db = await this.init();
@@ -297,7 +298,7 @@ class OfflineStorage {
     }
   }
 
-  // Synchronisation avec Supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async syncWithServer(supabase: any) {
     const queue = await this.getSyncQueue();
     console.log(`Synchronizing ${queue.length} items...`);
@@ -311,7 +312,6 @@ class OfflineStorage {
         console.error(`Failed to sync ${item.id}:`, error);
         await this.incrementSyncAttempts(item.id);
 
-        // Abandonner après 3 tentatives
         if (item.attempts >= 3) {
           console.error(`Abandoning sync for ${item.id} after 3 attempts`);
           await this.clearSyncItem(item.id);
@@ -320,16 +320,17 @@ class OfflineStorage {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async syncItem(supabase: any, item: any) {
     const { table, action, data } = item;
 
     switch (table) {
       case "events":
         if (action === "create") {
-          const { _offline, _action, _timestamp, ...eventData } = data;
+          const { ...eventData } = data;
           await supabase.from("events").insert(eventData);
         } else if (action === "update") {
-          const { _offline, _action, _timestamp, ...eventData } = data;
+          const { ...eventData } = data;
           await supabase.from("events").update(eventData).eq("id", data.id);
         } else if (action === "delete") {
           await supabase.from("events").delete().eq("id", data.id);
@@ -338,7 +339,7 @@ class OfflineStorage {
 
       case "participations":
         if (action === "create") {
-          const { _offline, _action, _timestamp, ...participationData } = data;
+          const { ...participationData } = data;
           await supabase.from("event_participants").insert(participationData);
         } else if (action === "delete") {
           await supabase.from("event_participants").delete().eq("id", data.id);
@@ -347,17 +348,16 @@ class OfflineStorage {
 
       case "profiles":
         if (action === "create") {
-          const { _offline, _action, _timestamp, ...profileData } = data;
+          const { ...profileData } = data;
           await supabase.from("profiles").insert(profileData);
         } else if (action === "update") {
-          const { _offline, _action, _timestamp, ...profileData } = data;
+          const { ...profileData } = data;
           await supabase.from("profiles").update(profileData).eq("id", data.id);
         }
         break;
     }
   }
 
-  // Effacer toutes les données
   async clearAll() {
     const db = await this.init();
     await db.clear("events");

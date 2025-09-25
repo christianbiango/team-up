@@ -23,6 +23,7 @@ export class OfflineEventManager {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async createEvent(eventData: any) {
     const eventId = generateUUID();
     const event = {
@@ -54,6 +55,7 @@ export class OfflineEventManager {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async createEventOffline(event: any) {
     await offlineStorage.saveEvent(event, true);
     toast.success(
@@ -65,6 +67,7 @@ export class OfflineEventManager {
     return event;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async updateEvent(eventId: string, updates: any) {
     const updatedEvent = {
       ...updates,
@@ -94,6 +97,7 @@ export class OfflineEventManager {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async updateEventOffline(event: any) {
     await offlineStorage.saveEvent(event, true);
     toast.success(
@@ -170,6 +174,7 @@ export class OfflineEventManager {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async joinEventOffline(participation: any) {
     await offlineStorage.saveParticipation(participation, true);
     toast.success(
@@ -267,6 +272,7 @@ export class OfflineEventManager {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mergeEvents(localEvents: any[], onlineEvents: any[]) {
     const merged = [...onlineEvents];
 

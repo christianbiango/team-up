@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { offlineStorage } from "@/lib/offline/offlineStorage";
-import { useOffline } from "@/hooks/useOffline";
 import { toast } from "sonner";
+import { useOffline } from "./useOffline";
+import { createClient } from "@/lib/supabase/client";
 
 export const useOfflineSync = () => {
   const { isOnline } = useOffline();
 
   useEffect(() => {
     const syncData = async () => {
+      const supabase = createClient();
       if (!isOnline) return;
 
       window.dispatchEvent(new CustomEvent("sync-start"));
@@ -51,6 +52,7 @@ export const useOfflineSync = () => {
       toast.error("Impossible de synchroniser en mode hors ligne");
       return;
     }
+    const supabase = createClient();
 
     window.dispatchEvent(new CustomEvent("sync-start"));
 

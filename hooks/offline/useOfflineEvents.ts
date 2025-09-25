@@ -48,7 +48,7 @@ export const useOfflineEvents = () => {
     }
   };
 
-  const createEvent = async (eventData: any) => {
+  const createEvent = async (eventData: Partial<Event>) => {
     try {
       const newEvent = await offlineEventManager.createEvent(eventData);
       await loadEvents();
@@ -59,7 +59,7 @@ export const useOfflineEvents = () => {
     }
   };
 
-  const updateEvent = async (eventId: string, updates: any) => {
+  const updateEvent = async (eventId: string, updates: Partial<Event>) => {
     try {
       const updatedEvent = await offlineEventManager.updateEvent(
         eventId,
@@ -106,7 +106,6 @@ export const useOfflineEvents = () => {
   useEffect(() => {
     loadEvents();
 
-    // Recharger les événements lors de la reconnexion
     const handleSync = () => {
       loadEvents();
     };
