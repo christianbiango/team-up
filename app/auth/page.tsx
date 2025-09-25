@@ -80,10 +80,9 @@ const Auth = () => {
         email,
         password,
       });
-      console.log("Sign-in result:", { error });
       if (error) throw error;
 
-      toast.success("Connexion réussie ! Prêt pour l'aventure ?");
+      //toast.success("Connexion réussie ! Prêt pour l'aventure ?");
       router.push("/dashboard");
     } catch (error: unknown) {
       if (error instanceof Error) {

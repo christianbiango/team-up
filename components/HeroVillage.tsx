@@ -47,7 +47,7 @@ const HeroVillage = () => {
               locale !
               <br />
               🤝 Partagez des moments uniques et construisez ensemble une vie
-              associative riche en émotions.
+              sportive riche en émotions.
             </p>
           </div>
 
