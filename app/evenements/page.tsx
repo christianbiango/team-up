@@ -449,7 +449,7 @@ const Events = () => {
               </p>
               <Button
                 variant="village"
-                onClick={() => router.push("/create-event")}
+                onClick={() => router.push("/evenements/creer")}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Créer un événement

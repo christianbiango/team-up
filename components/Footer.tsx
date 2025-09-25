@@ -55,20 +55,20 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/dashboard"
                   className="text-earth-brown/70 hover:text-coral-warm transition-colors"
                 >
                   Tableau de bord
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/auth"
                   className="text-earth-brown/70 hover:text-coral-warm transition-colors"
                 >
                   Connexion
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
