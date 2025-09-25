@@ -115,7 +115,6 @@ const ProfileSetup = () => {
         return;
       }
 
-      // Vérifier si le nom d'utilisateur est disponible
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("username")
@@ -170,7 +169,6 @@ const ProfileSetup = () => {
         <div className="container mx-auto max-w-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Informations de base */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -230,7 +228,6 @@ const ProfileSetup = () => {
                 </CardContent>
               </Card>
 
-              {/* Contact et localisation */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -273,7 +270,6 @@ const ProfileSetup = () => {
                 </CardContent>
               </Card>
 
-              {/* Préférences sportives */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -412,7 +408,6 @@ const ProfileSetup = () => {
                 </CardContent>
               </Card>
 
-              {/* Bouton de création */}
               <div className="text-center">
                 <Button
                   type="submit"

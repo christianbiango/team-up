@@ -76,7 +76,6 @@ const Profile = () => {
 
       setUser(user);
 
-      // Récupérer le profil utilisateur
       const { data: profileData, error } = await supabase
         .from("profiles")
         .select("*")
@@ -85,7 +84,6 @@ const Profile = () => {
 
       if (error) {
         if (error.code === "PGRST116") {
-          // Aucun profil trouvé
           router.push("/profile/creer");
           return;
         }
@@ -163,7 +161,6 @@ const Profile = () => {
       <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
         <div className="container mx-auto max-w-4xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Profil principal */}
             <Card className="md:col-span-1 bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
               <CardContent className="p-8 text-center">
                 <Avatar className="w-32 h-32 mx-auto mb-6">
@@ -211,9 +208,7 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* Informations détaillées */}
             <div className="md:col-span-2 space-y-6">
-              {/* Contact */}
               <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -245,7 +240,6 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Sports préférés */}
               <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -274,7 +268,6 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Disponibilités */}
               <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">

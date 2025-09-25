@@ -34,6 +34,7 @@ export default {
         terracotta: "hsl(var(--terracotta))",
         "cream-warm": "hsl(var(--cream-warm))",
         "earth-brown": "hsl(var(--earth-brown))",
+        "forest-fresh": "hsl(140, 45%, 55%)",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

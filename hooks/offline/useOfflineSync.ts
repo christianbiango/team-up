@@ -1,0 +1,69 @@
+import { useEffect } from "react";
+import { offlineStorage } from "@/lib/offline/offlineStorage";
+import { toast } from "sonner";
+import { useOffline } from "./useOffline";
+import { createClient } from "@/lib/supabase/client";
+
+export const useOfflineSync = () => {
+  const { isOnline } = useOffline();
+
+  useEffect(() => {
+    const syncData = async () => {
+      const supabase = createClient();
+      if (!isOnline) return;
+
+      window.dispatchEvent(new CustomEvent("sync-start"));
+
+      try {
+        await offlineStorage.syncWithServer(supabase);
+        console.log("Synchronisation terminée avec succès");
+      } catch (error) {
+        console.error("Erreur lors de la synchronisation:", error);
+        toast.error("Erreur lors de la synchronisation des données");
+      } finally {
+        window.dispatchEvent(new CustomEvent("sync-end"));
+      }
+    };
+
+    const handleSyncData = () => {
+      syncData();
+    };
+
+    let syncInterval: NodeJS.Timeout;
+    if (isOnline) {
+      syncData();
+      syncInterval = setInterval(syncData, 30000);
+    }
+
+    window.addEventListener("sync-data", handleSyncData);
+
+    return () => {
+      window.removeEventListener("sync-data", handleSyncData);
+      if (syncInterval) {
+        clearInterval(syncInterval);
+      }
+    };
+  }, [isOnline]);
+
+  const forceSyncNow = async () => {
+    if (!isOnline) {
+      toast.error("Impossible de synchroniser en mode hors ligne");
+      return;
+    }
+    const supabase = createClient();
+
+    window.dispatchEvent(new CustomEvent("sync-start"));
+
+    try {
+      await offlineStorage.syncWithServer(supabase);
+      toast.success("Synchronisation réussie !");
+    } catch (error) {
+      console.error("Erreur lors de la synchronisation forcée:", error);
+      toast.error("Erreur lors de la synchronisation");
+    } finally {
+      window.dispatchEvent(new CustomEvent("sync-end"));
+    }
+  };
+
+  return { forceSyncNow };
+};

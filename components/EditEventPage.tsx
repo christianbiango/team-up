@@ -4,17 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  CalendarIcon,
-  Clock,
-  MapPin,
-  Trophy,
-  Users
-} from "lucide-react";
+import { CalendarIcon, Clock, MapPin, Trophy, Users } from "lucide-react";
 
 import { SimpleNavbar } from "@/components/navigation/SimpleNavbar";
 import { Button } from "@/components/ui/button";
@@ -86,7 +80,7 @@ const SKILL_LEVELS = [
   { value: "expert", label: "Expert" },
 ];
 
-export default function CreateEventPage() {
+export default function EditEventPage({ id }: { id: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -107,6 +101,48 @@ export default function CreateEventPage() {
     },
   });
 
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      const supabase = createClient();
+      try {
+        const { data: eventData, error: eventError } = await supabase
+          .from("events")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (eventError) {
+          console.error("Error fetching event:", eventError);
+          toast.error("Impossible de charger l'événement");
+          return;
+        }
+
+        if (eventData) {
+          form.reset({
+            title: eventData.title,
+            description: eventData.description || "",
+            sport_type: eventData.sport_type,
+            date_time: new Date(eventData.date_time),
+            duration: eventData.duration,
+            max_participants: eventData.max_participants,
+            venue_address: eventData.venue_address || "",
+            skill_level: eventData.skill_level,
+            required_equipment: eventData.required_equipment
+              ? eventData.required_equipment.join(", ")
+              : "",
+            price_per_person: eventData.price_per_person,
+            is_private: eventData.is_private,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Une erreur est survenue");
+      }
+    };
+
+    fetchEventDetails();
+  }, [id, form]);
+
   const onSubmit = async (data: EventFormData) => {
     setIsLoading(true);
     const supabase = createClient();
@@ -116,7 +152,7 @@ export default function CreateEventPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        toast.error("Vous devez être connecté pour créer un événement.");
+        toast.error("Vous devez être connecté pour modifier un événement.");
         router.push("/auth");
         return;
       }
@@ -135,21 +171,23 @@ export default function CreateEventPage() {
           : [],
         price_per_person: data.price_per_person,
         is_private: data.is_private,
-        organizer_id: user.id,
-        current_participants: 1,
-        status: "open" as const,
       };
 
-      const { error } = await supabase.from("events").insert([eventData]);
+      console.log("eventData", eventData);
+
+      const { error } = await supabase
+        .from("events")
+        .update(eventData)
+        .eq("id", id);
+      console.log("error", error);
       if (error) throw error;
 
-      toast.success("Votre événement a été créé avec succès.");
-
-      router.push("/events");
+      toast.success("Votre événement a été modifié avec succès.");
+      router.push(`/evenements/${id}`);
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error updating event:", error);
       toast.error(
-        "Une erreur est survenue lors de la création de l'événement."
+        "Une erreur est survenue lors de la modification de l'événement."
       );
     } finally {
       setIsLoading(false);
@@ -159,16 +197,15 @@ export default function CreateEventPage() {
   return (
     <>
       <SimpleNavbar
-        title="Créer un événement"
-        subtitle="Organisez votre prochaine aventure sportive !"
-        backTo="/dashboard"
+        title="Modifier un événement"
+        subtitle="Modifiez les détails de votre événement."
+        backTo={`/evenements/${id}`}
       />
       <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
         <div className="container mx-auto max-w-4xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Informations générales */}
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                   <CardHeader>
                     <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -273,7 +310,6 @@ export default function CreateEventPage() {
                   </CardContent>
                 </Card>
 
-                {/* Date et lieu */}
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                   <CardHeader>
                     <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -387,7 +423,6 @@ export default function CreateEventPage() {
                 </Card>
               </div>
 
-              {/* Participants et coût */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -467,7 +502,6 @@ export default function CreateEventPage() {
                 </CardContent>
               </Card>
 
-              {/* Équipement requis */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -498,7 +532,6 @@ export default function CreateEventPage() {
                 </CardContent>
               </Card>
 
-              {/* Boutons d'action */}
               <div className="flex gap-4 justify-end">
                 <Button
                   type="button"
@@ -513,7 +546,7 @@ export default function CreateEventPage() {
                   disabled={isLoading}
                   className="gap-2"
                 >
-                  {isLoading ? "Création..." : "Créer l'événement"}
+                  {isLoading ? "Modification..." : "Modifier l'événement"}
                   <Trophy className="h-4 w-4" />
                 </Button>
               </div>

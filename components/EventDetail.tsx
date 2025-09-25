@@ -1,28 +1,38 @@
 "use client";
 
+import GoogleMap from "@/components/GoogleMap";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useOfflineEvents } from "@/hooks/offline/useOfflineEvents";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 import {
   Calendar,
   Clock,
   DollarSign,
   Edit,
   MapPin,
-  Share2,
   Trash2,
   Trophy,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import { useOfflineEvents } from "@/hooks/useOfflineEvents";
-import GoogleMap from "@/components/GoogleMap";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import SimpleNavbar from "./navigation/SimpleNavbar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Event {
   id: string;
@@ -64,7 +74,7 @@ interface EventDetailProps {
 
 const EventDetail = ({ id }: EventDetailProps) => {
   const router = useRouter();
-  // const { joinEvent, leaveEvent } = useOfflineEvents();
+  const { joinEvent, leaveEvent } = useOfflineEvents();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -72,6 +82,7 @@ const EventDetail = ({ id }: EventDetailProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userParticipation, setUserParticipation] =
     useState<Participant | null>(null);
+  const [open, setOpen] = useState(false);
 
   const supabase = createClient();
 
@@ -81,6 +92,15 @@ const EventDetail = ({ id }: EventDetailProps) => {
       getCurrentUser();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const found = participants.find(
+        (p) => p.participant_id === currentUser.id
+      );
+      setUserParticipation(found || null);
+    }
+  }, [currentUser, participants]);
 
   const getCurrentUser = async () => {
     const {
@@ -117,23 +137,15 @@ const EventDetail = ({ id }: EventDetailProps) => {
           .eq("event_id", id)
           .eq("status", "confirmed");
 
-      if (participantsError) console.error(participantsError);
-      else
+      if (participantsError) {
+        console.error(participantsError);
+      } else {
         setParticipants(
           (participantsData || []).map((p) => ({
             ...p,
             profiles: Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
           }))
         );
-
-      if (currentUser) {
-        const userParticipation = participantsData
-          ?.map((p) => ({
-            ...p,
-            profiles: Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
-          }))
-          .find((p) => p.participant_id === currentUser.id);
-        setUserParticipation(userParticipation || null);
       }
     } catch (error) {
       console.error(error);
@@ -143,36 +155,40 @@ const EventDetail = ({ id }: EventDetailProps) => {
     }
   };
 
-  // const handleJoinEvent = async () => {
-  //   if (!event || !currentUser) return;
+  const handleJoinEvent = async () => {
+    if (!event || !currentUser) return;
 
-  //   if (participants.length >= event.max_participants) {
-  //     toast.error("Nombre maximum de participants atteint");
-  //     return;
-  //   }
+    if (participants.length >= event.max_participants) {
+      toast.error("Nombre maximum de participants atteint");
+      return;
+    }
 
-  //   try {
-  //     await joinEvent(event.id, currentUser.id);
-  //     toast.success("Vous participez maintenant à cet événement");
-  //     fetchEventDetails();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Impossible de rejoindre l'événement");
-  //   }
-  // };
+    try {
+      await joinEvent(event.id, currentUser.id);
+      toast.success("Vous participez maintenant à cet événement");
+      fetchEventDetails();
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible de rejoindre l'événement");
+    }
+  };
 
-  // const handleLeaveEvent = async () => {
-  //   if (!userParticipation) return;
+  const handleLeaveEvent = async () => {
+    if (!userParticipation) return;
 
-  //   try {
-  //     await leaveEvent(userParticipation.id);
-  //     toast.success("Vous ne participez plus à cet événement");
-  //     fetchEventDetails();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Impossible d'annuler la participation");
-  //   }
-  // };
+    try {
+      await leaveEvent(userParticipation.id);
+      toast.success("Vous ne participez plus à cet événement");
+
+      setParticipants((prev) =>
+        prev.filter((p) => p.id !== userParticipation.id)
+      );
+      setUserParticipation(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible d'annuler la participation");
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -203,7 +219,6 @@ const EventDetail = ({ id }: EventDetailProps) => {
     return `${remainingMinutes}min`;
   };
 
-  const canEdit = currentUser && event && currentUser.id === event.organizer_id;
   const canJoin =
     currentUser &&
     event &&
@@ -213,7 +228,7 @@ const EventDetail = ({ id }: EventDetailProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center">
         <div className="text-earth-brown">Chargement...</div>
       </div>
     );
@@ -221,55 +236,28 @@ const EventDetail = ({ id }: EventDetailProps) => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-earth-brown mb-4">
             Événement non trouvé
           </h2>
-          <Button onClick={() => router.push("/events")} variant="outline">
+          <Button onClick={() => router.push("/evenements")} variant="outline">
             Retour aux événements
           </Button>
         </div>
       </div>
     );
   }
-
-  const headerActions = [];
-
-  if (canEdit) {
-    headerActions.push(
-      <Button key="edit" variant="outline" size="sm" className="gap-2">
-        <Edit className="h-4 w-4" />
-        <span className="hidden sm:inline">Modifier</span>
-      </Button>
-    );
-    headerActions.push(
-      <Button key="delete" variant="outline" size="sm">
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    );
-  }
-
-  headerActions.push(
-    <Button key="share" variant="outline" size="sm" className="gap-2">
-      <Share2 className="h-4 w-4" />
-      <span className="hidden sm:inline">Partager</span>
-    </Button>
-  );
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forest-fresh via-sage-light to-coral-warm/20">
+    <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
       <SimpleNavbar
         title={event?.title || "Événement"}
-        backTo="/events"
+        backTo="/evenements"
         backLabel="Événements"
-        actions={headerActions}
       />
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Event Header */}
             <Card>
               <CardHeader>
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -387,39 +375,90 @@ const EventDetail = ({ id }: EventDetailProps) => {
             {/* Action Button */}
             <Card>
               <CardContent className="pt-6">
-                {canJoin && (
-                  <Button
-                    onClick={() => console.log("Join event")}
-                    className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
-                    disabled={participants.length >= event.max_participants}
-                  >
-                    {participants.length >= event.max_participants
-                      ? "Événement complet"
-                      : "Rejoindre l'événement"}
-                  </Button>
-                )}
-                {canLeave && (
-                  <Button
-                    onClick={() => console.log("Leave event")}
-                    variant="outline"
-                    className="w-full border-coral-warm text-coral-warm hover:bg-coral-warm hover:text-white"
-                    disabled
-                  >
-                    Annuler ma participation
-                  </Button>
-                )}
-                {!currentUser && (
-                  <Button
-                    onClick={() => router.push("/auth")}
-                    className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
-                  >
-                    Se connecter pour participer
-                  </Button>
+                {currentUser?.id === event.organizer_id ? (
+                  <div className="space-y-4">
+                    <p className="text-sm text-earth-brown/70 font-bold">
+                      Vous êtes l&apos;organisateur
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        key="edit"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => router.push(`/evenements/${id}/edit`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span>Modifier</span>
+                      </Button>
+                      <AlertDialog open={open} onOpenChange={setOpen}>
+                        <AlertDialogTrigger asChild>
+                          <Button key="delete" variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" /> Supprimer
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-sm w-[90%] bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-soft border-0">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-earth-brown text-lg font-semibold">
+                              Confirmation de suppression
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-earth-brown mt-2">
+                              Êtes-vous sûr de vouloir supprimer cet événement ?
+                              Cette action est irréversible.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="mt-4 flex justify-end gap-3">
+                            <AlertDialogCancel className="bg-cream-warm hover:bg-cream-warm/90 text-earth-brown rounded-lg px-4 py-2">
+                              Annuler
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDeleteEvent}
+                              className="bg-coral-warm hover:bg-coral-warm/90 text-white rounded-lg px-4 py-2"
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {canJoin && (
+                      <Button
+                        onClick={handleJoinEvent}
+                        className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
+                        disabled={participants.length >= event.max_participants}
+                      >
+                        {participants.length >= event.max_participants
+                          ? "Événement complet"
+                          : "Rejoindre l'événement"}
+                      </Button>
+                    )}
+
+                    {canLeave && (
+                      <Button
+                        onClick={handleLeaveEvent}
+                        variant="outline"
+                        className="w-full border-coral-warm text-coral-warm hover:bg-coral-warm hover:text-white"
+                      >
+                        Annuler ma participation
+                      </Button>
+                    )}
+
+                    {!currentUser && (
+                      <Button
+                        onClick={() => router.push("/auth")}
+                        className="w-full bg-forest-fresh hover:bg-forest-fresh/90 text-white"
+                      >
+                        Se connecter pour participer
+                      </Button>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
 
-            {/* Participants */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -468,6 +507,34 @@ const EventDetail = ({ id }: EventDetailProps) => {
       </div>
     </div>
   );
+
+  async function handleDeleteEvent() {
+    if (!id) return;
+
+    setOpen(false);
+    const supabase = createClient();
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("events").delete().eq("id", id);
+
+      if (error) {
+        console.error("Error deleting event:", error);
+        toast.error("Impossible de supprimer l'événement");
+        return;
+      }
+
+      toast.success("Événement supprimé avec succès");
+      router.push("/evenements");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      toast.error(
+        "Une erreur est survenue lors de la suppression de l'événement."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 };
 
 export default EventDetail;

@@ -26,7 +26,7 @@ const HeroVillage = () => {
           <div className="relative">
             <div
               className="absolute -top-8 left-1/2 animate-slide-x"
-              style={{ animationDuration: "6s" }} // durée pour l’aller-retour
+              style={{ animationDuration: "6s" }}
             >
               <Sun
                 className="h-16 w-16 text-sunshine-yellow animate-spin"
@@ -56,7 +56,7 @@ const HeroVillage = () => {
               variant="village"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
-              onClick={() => (window.location.href = "/create-event")}
+              onClick={() => (window.location.href = "/evenements/creer")}
             >
               <Heart className="h-6 w-6" />
               Créer un événement
@@ -65,7 +65,7 @@ const HeroVillage = () => {
               variant="village-soft"
               size="lg"
               className="text-xl px-10 py-4 gap-3"
-              onClick={() => (window.location.href = "/events")}
+              onClick={() => (window.location.href = "/evenements")}
             >
               <Users className="h-6 w-6" />
               Découvrir les événements

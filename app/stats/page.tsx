@@ -80,7 +80,6 @@ type EventParticipant = {
   id: string;
   participant_id: string;
   event_id: string;
-  // add other participant fields as needed
 };
 
 type Event = {
@@ -89,7 +88,6 @@ type Event = {
   created_at: string;
   date_time: string;
   event_participants?: EventParticipant[];
-  // add other event fields as needed
 };
 
 type Participation = {
@@ -118,7 +116,6 @@ const Stats = () => {
         return;
       }
 
-      // Charger le profil
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
@@ -129,7 +126,6 @@ const Stats = () => {
         setProfile(profileData);
       }
 
-      // Charger les statistiques
       const statsData = await calculateUserStats(user.id);
       setStats(statsData);
     } catch (error: unknown) {
@@ -141,19 +137,16 @@ const Stats = () => {
   };
 
   const calculateUserStats = async (userId: string): Promise<UserStats> => {
-    // Événements créés
     const { data: createdEvents } = await supabase
       .from("events")
       .select("*, event_participants(*)")
       .eq("organizer_id", userId);
 
-    // Événements auxquels l'utilisateur participe
     const { data: participations } = await supabase
       .from("event_participants")
       .select("events(*)")
       .eq("participant_id", userId);
 
-    // Calculer les métriques
     const eventsCreated = createdEvents?.length || 0;
     const eventsParticipated = participations?.length || 0;
 
@@ -162,7 +155,6 @@ const Stats = () => {
         return total + (event.event_participants?.length || 0);
       }, 0) || 0;
 
-    // Sports favoris basés sur la participation
     const sportsCount: Record<string, number> = {};
     participations?.forEach((p: Participation) => {
       if (Array.isArray(p.events)) {
@@ -186,7 +178,6 @@ const Stats = () => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Activité mensuelle (derniers 6 mois)
     const monthlyActivity: { month: string; events: number }[] = [];
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -217,7 +208,6 @@ const Stats = () => {
       });
     }
 
-    // Événements à venir vs complétés
     const now_iso = new Date().toISOString();
     const upcomingEvents = [
       ...(createdEvents?.filter((e: Event) => e.date_time > now_iso) || []),
@@ -230,7 +220,6 @@ const Stats = () => {
 
     const completedEvents = eventsCreated + eventsParticipated - upcomingEvents;
 
-    // Calculer les achievements
     const achievements: string[] = [];
     if (eventsCreated >= 1) achievements.push("first_event");
     if (eventsParticipated >= 5) achievements.push("social_butterfly");
@@ -319,7 +308,6 @@ const Stats = () => {
       />
       <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 p-4">
         <div className="container mx-auto max-w-6xl p-4">
-          {/* Niveau d'activité */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-6">
@@ -360,7 +348,6 @@ const Stats = () => {
             </CardContent>
           </Card>
 
-          {/* Métriques principales */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white shadow-warm rounded-3xl border-0">
               <CardContent className="p-6 text-center">
@@ -404,7 +391,6 @@ const Stats = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Sports favoris */}
             <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
               <CardHeader>
                 <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -458,7 +444,6 @@ const Stats = () => {
               </CardContent>
             </Card>
 
-            {/* Activité mensuelle */}
             <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
               <CardHeader>
                 <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -505,7 +490,6 @@ const Stats = () => {
             </Card>
           </div>
 
-          {/* Succès débloqués */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mt-8">
             <CardHeader>
               <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -560,7 +544,6 @@ const Stats = () => {
             </CardContent>
           </Card>
 
-          {/* Résumé du profil */}
           {profile && (
             <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mt-8">
               <CardHeader>

@@ -158,7 +158,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card
             className="bg-gradient-to-br from-coral-warm to-sunshine-yellow text-white shadow-warm rounded-3xl border-0 cursor-pointer hover:scale-105 transition-all duration-300"
-            onClick={() => router.push("/create-event")}
+            onClick={() => router.push("/evenements/creer")}
           >
             <CardContent className="p-6 text-center">
               <Plus className="h-12 w-12 mx-auto mb-4" />
@@ -171,7 +171,7 @@ const Dashboard = () => {
 
           <Card
             className="bg-gradient-to-br from-meadow-green to-sunshine-yellow text-white shadow-warm rounded-3xl border-0 cursor-pointer hover:scale-105 transition-all duration-300"
-            onClick={() => router.push("/events")}
+            onClick={() => router.push("/evenements")}
           >
             <CardContent className="p-6 text-center">
               <Calendar className="h-12 w-12 mx-auto mb-4" />
@@ -196,7 +196,6 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* User Stats */}
         {profile && (
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
             <CardHeader>
@@ -260,7 +259,6 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Événements à venir */}
         <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-earth-brown">
@@ -281,7 +279,7 @@ const Dashboard = () => {
                 <Button
                   variant="village"
                   className="mt-4"
-                  onClick={() => router.push("/create-event")}
+                  onClick={() => router.push("/evenements/creer")}
                 >
                   Créer le premier événement
                 </Button>
@@ -333,7 +331,7 @@ const Dashboard = () => {
                         variant="village-soft"
                         size="sm"
                         className="w-full mt-3"
-                        onClick={() => router.push(`/events/${event.id}`)}
+                        onClick={() => router.push(`/evenements/${event.id}`)}
                       >
                         Voir les détails
                       </Button>

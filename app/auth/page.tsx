@@ -98,7 +98,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30 flex items-center justify-center p-4">
-      {/* Éléments décoratifs */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-gradient-to-br from-sunshine-yellow to-coral-warm rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 right-20 w-32 h-32 bg-gradient-to-br from-meadow-green to-sunshine-yellow rounded-full opacity-15 animate-bounce"></div>
 
