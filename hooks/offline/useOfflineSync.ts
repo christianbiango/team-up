@@ -25,16 +25,14 @@ export const useOfflineSync = () => {
       }
     };
 
-    // Synchroniser automatiquement quand on revient en ligne
     const handleSyncData = () => {
       syncData();
     };
 
-    // Synchroniser périodiquement quand on est en ligne
     let syncInterval: NodeJS.Timeout;
     if (isOnline) {
-      syncData(); // Sync immédiat
-      syncInterval = setInterval(syncData, 30000); // Toutes les 30 secondes
+      syncData();
+      syncInterval = setInterval(syncData, 30000);
     }
 
     window.addEventListener("sync-data", handleSyncData);

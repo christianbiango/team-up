@@ -43,7 +43,6 @@ export class OfflineEventManager {
 
         if (error) throw error;
 
-        // Sauvegarder en local aussi
         await offlineStorage.saveEvent(data, false);
         return data;
       } catch (error) {
@@ -223,7 +222,6 @@ export class OfflineEventManager {
   }
 
   async getEvents(filters?: { organizer_id?: string; upcoming?: boolean }) {
-    // Toujours essayer d'abord les données locales
     const localEvents = await offlineStorage.getEvents(filters);
 
     if (this.isOnline) {
@@ -250,11 +248,9 @@ export class OfflineEventManager {
 
         if (error) throw error;
 
-        // Fusionner avec les données locales
         const onlineEvents = data || [];
         const mergedEvents = this.mergeEvents(localEvents, onlineEvents);
 
-        // Mettre à jour le cache local avec les nouvelles données
         for (const event of onlineEvents) {
           await offlineStorage.saveEvent(event, false);
         }
@@ -276,7 +272,6 @@ export class OfflineEventManager {
   private mergeEvents(localEvents: any[], onlineEvents: any[]) {
     const merged = [...onlineEvents];
 
-    // Ajouter les événements locaux qui ne sont pas en ligne
     for (const localEvent of localEvents) {
       if (localEvent._offline && !merged.find((e) => e.id === localEvent.id)) {
         merged.push(localEvent);

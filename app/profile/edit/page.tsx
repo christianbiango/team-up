@@ -151,7 +151,6 @@ const EditProfile = () => {
 
       setProfile(profileData);
 
-      // Remplir le formulaire avec les données existantes
       form.reset({
         username: profileData.username,
         full_name: profileData.full_name,
@@ -175,7 +174,6 @@ const EditProfile = () => {
 
     setIsLoading(true);
     try {
-      // Vérifier si le nom d'utilisateur est disponible (sauf si c'est le même)
       if (data.username !== profile.username) {
         const { data: existingProfile } = await supabase
           .from("profiles")
@@ -240,7 +238,6 @@ const EditProfile = () => {
         <div className="container mx-auto max-w-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Informations de base */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -300,7 +297,6 @@ const EditProfile = () => {
                 </CardContent>
               </Card>
 
-              {/* Contact et localisation */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -343,7 +339,6 @@ const EditProfile = () => {
                 </CardContent>
               </Card>
 
-              {/* Préférences sportives */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -482,7 +477,6 @@ const EditProfile = () => {
                 </CardContent>
               </Card>
 
-              {/* Boutons d'action */}
               <div className="flex gap-4 justify-end">
                 <Button
                   type="button"

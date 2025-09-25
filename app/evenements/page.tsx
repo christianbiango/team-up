@@ -121,7 +121,6 @@ const Events = () => {
       if (error) throw error;
       const eventsData = data || [];
 
-      // Géocoder automatiquement les événements qui n'ont pas de coordonnées
       interface EventToGeocode {
         id: string;
         venue_address: string;
@@ -174,7 +173,6 @@ const Events = () => {
   const filterEvents = useCallback(() => {
     let filtered = events;
 
-    // Filtrer par recherche
     if (searchTerm) {
       filtered = filtered.filter(
         (event) =>
@@ -184,7 +182,6 @@ const Events = () => {
       );
     }
 
-    // Filtrer par sport
     if (selectedSport !== "all") {
       filtered = filtered.filter(
         (event) =>
@@ -192,7 +189,6 @@ const Events = () => {
       );
     }
 
-    // Filtrer par niveau
     if (selectedLevel !== "all") {
       filtered = filtered.filter(
         (event) =>
@@ -200,7 +196,6 @@ const Events = () => {
       );
     }
 
-    // Filtrer par distance
     if (maxDistance !== "all" && userLocation) {
       const maxDistanceKm = parseInt(maxDistance);
       filtered = filtered.filter((event) => {
@@ -215,7 +210,6 @@ const Events = () => {
       });
     }
 
-    // Trier par distance si l'utilisateur a une position
     if (userLocation) {
       filtered.sort((a, b) => {
         if (!a.latitude || !a.longitude) return 1;
@@ -308,7 +302,6 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-warm via-sunshine-light/20 to-coral-light/30">
-      {/* Header */}
       <SimpleNavbar
         title="Événements sportifs"
         subtitle="Découvrez et rejoignez les activités près de chez vous"
@@ -316,7 +309,6 @@ const Events = () => {
       />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Filtres */}
         <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-earth-brown">
@@ -388,7 +380,6 @@ const Events = () => {
               </Select>
             </div>
 
-            {/* Géolocalisation */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-4">
                 <Button
@@ -423,11 +414,10 @@ const Events = () => {
               )}
             </div>
 
-            {/* Carte */}
             {showMap && (
               <div className="mt-6">
                 <GoogleMap
-                  center={userLocation || { lat: 48.8566, lng: 2.3522 }} // Paris par défaut
+                  center={userLocation || { lat: 48.8566, lng: 2.3522 }} // Paris default
                   zoom={12}
                   markers={filteredEvents
                     .filter((event) => event.latitude && event.longitude)
@@ -443,7 +433,6 @@ const Events = () => {
           </CardContent>
         </Card>
 
-        {/* Liste des événements */}
         {filteredEvents.length === 0 ? (
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
             <CardContent className="p-12 text-center">

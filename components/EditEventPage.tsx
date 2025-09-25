@@ -206,7 +206,6 @@ export default function EditEventPage({ id }: { id: string }) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Informations générales */}
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                   <CardHeader>
                     <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -311,7 +310,6 @@ export default function EditEventPage({ id }: { id: string }) {
                   </CardContent>
                 </Card>
 
-                {/* Date et lieu */}
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                   <CardHeader>
                     <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -425,7 +423,6 @@ export default function EditEventPage({ id }: { id: string }) {
                 </Card>
               </div>
 
-              {/* Participants et coût */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -505,7 +502,6 @@ export default function EditEventPage({ id }: { id: string }) {
                 </CardContent>
               </Card>
 
-              {/* Équipement requis */}
               <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-earth-brown flex items-center gap-2">
@@ -536,7 +532,6 @@ export default function EditEventPage({ id }: { id: string }) {
                 </CardContent>
               </Card>
 
-              {/* Boutons d'action */}
               <div className="flex gap-4 justify-end">
                 <Button
                   type="button"

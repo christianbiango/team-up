@@ -459,7 +459,6 @@ const EventDetail = ({ id }: EventDetailProps) => {
               </CardContent>
             </Card>
 
-            {/* Participants */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-earth-brown flex items-center gap-2">

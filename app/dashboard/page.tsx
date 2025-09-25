@@ -196,7 +196,6 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* User Stats */}
         {profile && (
           <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0 mb-8">
             <CardHeader>
@@ -260,7 +259,6 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Événements à venir */}
         <Card className="bg-white/90 backdrop-blur-sm shadow-warm rounded-3xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-earth-brown">

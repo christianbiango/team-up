@@ -14,7 +14,6 @@ export const useOffline = () => {
         toast.success("Connexion rétablie ! Synchronisation en cours...", {
           duration: 3000,
         });
-        // Déclencher la synchronisation
         window.dispatchEvent(new CustomEvent("sync-data"));
         setWasOffline(false);
       }

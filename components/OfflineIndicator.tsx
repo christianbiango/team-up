@@ -18,7 +18,6 @@ export const OfflineIndicator = () => {
 
     checkPendingSync();
 
-    // Écouter les événements de synchronisation
     const handleSyncStart = () => setIsSyncing(true);
     const handleSyncEnd = () => {
       setIsSyncing(false);
@@ -29,7 +28,6 @@ export const OfflineIndicator = () => {
     window.addEventListener("sync-end", handleSyncEnd);
     window.addEventListener("sync-data", checkPendingSync);
 
-    // Vérifier périodiquement
     const interval = setInterval(checkPendingSync, 5000);
 
     return () => {
@@ -40,7 +38,6 @@ export const OfflineIndicator = () => {
     };
   }, []);
 
-  // Ne pas afficher si tout va bien
   if (isOnline && pendingSync === 0 && !isSyncing) {
     return null;
   }
@@ -49,7 +46,6 @@ export const OfflineIndicator = () => {
     <Card className="fixed top-4 right-4 z-50 bg-white/95 backdrop-blur-sm shadow-lg border-0 max-w-sm">
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          {/* Indicateur de connexion */}
           <div className="flex items-center gap-2">
             {isOnline ? (
               <Wifi className="h-4 w-4 text-meadow-green" />
@@ -61,7 +57,6 @@ export const OfflineIndicator = () => {
             </span>
           </div>
 
-          {/* Indicateur de synchronisation */}
           {(pendingSync > 0 || isSyncing) && (
             <div className="flex items-center gap-2">
               {isSyncing ? (
@@ -84,7 +79,6 @@ export const OfflineIndicator = () => {
           )}
         </div>
 
-        {/* Message d'information */}
         {!isOnline && (
           <p className="text-xs text-earth-brown/70 mt-2">
             Vos modifications seront synchronisées automatiquement à la

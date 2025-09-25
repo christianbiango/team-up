@@ -26,7 +26,7 @@ const HeroVillage = () => {
           <div className="relative">
             <div
               className="absolute -top-8 left-1/2 animate-slide-x"
-              style={{ animationDuration: "6s" }} // durée pour l’aller-retour
+              style={{ animationDuration: "6s" }}
             >
               <Sun
                 className="h-16 w-16 text-sunshine-yellow animate-spin"
